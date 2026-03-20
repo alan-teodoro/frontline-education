@@ -42,15 +42,18 @@ The current naming model assumes one Redis Cloud account per environment. Becaus
 - `config/catalog.yaml`: Frontline Education defaults, environment settings, subscription profiles, and size mappings.
 - `docs/naming-convention.md`: naming rules and examples for subscriptions, databases, users, roles, and secrets.
 - `docs/architecture.md`: implementation notes and orchestration guidance.
+- `docs/backend-bootstrap.md`: internal backend bootstrap stack for the S3 remote state bucket and GitHub Actions IAM access.
 - `docs/github-actions.md`: GitHub Actions setup, secrets, variables, and approval model.
 - `docs/local-testing.md`: local test workflow using the Git-ignored Redis Cloud credential file.
 - `modules/naming`: centralized name generation.
+- `modules/terraform_state_backend`: reusable S3 backend and IAM access module.
 - `modules/rediscloud_subscription`: Redis Cloud Pro subscription module.
 - `modules/rediscloud_database`: Redis Cloud database module.
 - `modules/rediscloud_access_bundle`: ACL user/role/rule, Secrets Manager, and IAM access module.
 - `scripts`: helper utilities used by GitHub Actions to resolve names, look up Redis Cloud resources, and generate tfvars files.
 - `stacks/subscription`: root stack for a subscription.
 - `stacks/database`: root stack for a database request.
+- `stacks/state-backend`: internal bootstrap stack for the S3 remote state bucket.
 - `.github/workflows/rediscloud-apply.yml`: request-driven apply workflow.
 - `.github/workflows/rediscloud-destroy.yml`: request-driven destroy workflow.
 - `.github/workflows/terraform-validate.yml`: CI validation workflow.
@@ -109,6 +112,10 @@ The default subscription deployment model in the repository is `managed`, which 
 - Database credentials are not exposed in Terraform outputs.
 - The generated ACL user password is stored in Terraform state, so a secure remote backend is mandatory before production rollout.
 - The application-facing artifact is the AWS Secrets Manager secret name or ARN, not the raw credential values.
+
+## Backend bootstrap
+
+The S3 backend required by GitHub Actions can be provisioned by the internal stack in [`stacks/state-backend`](/Users/alan/workspaces/alan-teodoro/frontline-education/stacks/state-backend). That stack is documented in [`docs/backend-bootstrap.md`](/Users/alan/workspaces/alan-teodoro/frontline-education/docs/backend-bootstrap.md) and is intended to be run before enabling the customer-facing workflows.
 
 ## Remaining future work
 

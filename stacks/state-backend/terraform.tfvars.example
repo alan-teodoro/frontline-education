@@ -1,0 +1,13 @@
+aws_region  = "us-east-1"
+bucket_name = "frontline-education-terraform"
+
+github_actions_role_arns = [
+  "arn:aws:iam::111122223333:role/GitHubActionsOIDCDev",
+  "arn:aws:iam::111122223333:role/GitHubActionsOIDCQa",
+  "arn:aws:iam::111122223333:role/GitHubActionsOIDCStage",
+  "arn:aws:iam::111122223333:role/GitHubActionsOIDCProd"
+]
+
+# Optional:
+# kms_key_arn = "arn:aws:kms:us-east-1:111122223333:key/12345678-1234-1234-1234-123456789012"
+# allowed_state_prefixes = ["subscriptions/*", "databases/*"]
