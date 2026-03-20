@@ -1,16 +1,13 @@
 module "naming" {
   source = "../../modules/naming"
 
-  environment             = var.environment
-  subscription_family     = var.subscription_family
-  app_name                = var.app_name
-  purpose                 = var.purpose
-  tier                    = var.tier
-  service_account_purpose = var.service_account_purpose
-  access_level            = var.access_level
-  temporary               = var.temporary
-  expiration_date         = var.expiration_date
-  secret_prefix           = try(local.secret_settings.prefix, "frontline-education/redis")
+  environment         = var.environment
+  subscription_family = var.subscription_family
+  app_name            = var.app_name
+  purpose             = var.purpose
+  tier                = var.tier
+  access_level        = var.access_level
+  secret_prefix       = try(local.secret_settings.prefix, "frontline-education/redis")
 }
 
 data "rediscloud_subscription" "target" {
@@ -58,7 +55,7 @@ module "access_bundle" {
   acl_user_password_override     = var.acl_user_password_override
   acl_rule_string                = coalesce(var.acl_rule_string_override, lookup(local.acl_rule_catalog, var.access_level, local.acl_rule_catalog.readwrite))
   secret_name                    = coalesce(var.secret_name_override, module.naming.secret_name)
-  application_role_arns          = var.application_role_arns
+  application_role_arn           = var.application_role_arn
   secret_recovery_window_in_days = try(local.secret_settings.recovery_window_in_days, 0)
   tags                           = local.aws_tags
 }

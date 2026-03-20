@@ -8,25 +8,6 @@ from pathlib import Path
 from typing import Any
 
 
-def parse_bool(value: str) -> bool:
-    return str(value).strip().lower() in {"1", "true", "yes", "y", "on"}
-
-
-def parse_role_arns(value: str) -> list[str]:
-    raw = value.strip()
-    if not raw:
-        return []
-
-    if raw.startswith("["):
-        parsed = json.loads(raw)
-        if not isinstance(parsed, list):
-            raise ValueError("application_role_arns JSON input must be a list")
-        return [str(item).strip() for item in parsed if str(item).strip()]
-
-    normalized = raw.replace("\n", ",")
-    return [item.strip() for item in normalized.split(",") if item.strip()]
-
-
 def remove_nulls(payload: dict[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in payload.items() if value is not None}
 
@@ -53,10 +34,7 @@ def main() -> None:
     parser.add_argument("--tier")
     parser.add_argument("--persistence-mode")
     parser.add_argument("--data-eviction")
-    parser.add_argument("--application-role-arns", default="")
-    parser.add_argument("--temporary", default="false")
-    parser.add_argument("--expiration-date")
-    parser.add_argument("--service-account-purpose", default="app")
+    parser.add_argument("--application-role-arn")
     parser.add_argument("--access-level", default="readwrite")
     parser.add_argument("--database-name-override")
     parser.add_argument("--secret-name-override")
@@ -85,10 +63,7 @@ def main() -> None:
                 "tier": blank_to_none(args.tier),
                 "persistence_mode": blank_to_none(args.persistence_mode),
                 "data_eviction": blank_to_none(args.data_eviction),
-                "application_role_arns": parse_role_arns(args.application_role_arns),
-                "temporary": parse_bool(args.temporary),
-                "expiration_date": blank_to_none(args.expiration_date),
-                "service_account_purpose": blank_to_none(args.service_account_purpose),
+                "application_role_arn": blank_to_none(args.application_role_arn),
                 "access_level": blank_to_none(args.access_level),
                 "database_name_override": blank_to_none(args.database_name_override),
                 "secret_name_override": blank_to_none(args.secret_name_override),

@@ -20,34 +20,21 @@ def normalize(value: str) -> str:
     return cleaned.strip("-")
 
 
-def parse_bool(value: str) -> bool:
-    return str(value).strip().lower() in {"1", "true", "yes", "y", "on"}
-
-
 def build_names(catalog: dict[str, Any], args: argparse.Namespace) -> dict[str, str]:
     environment = normalize(args.environment)
     subscription_family = normalize(args.subscription_family)
-    app_name = normalize(args.app_name)
-    purpose = normalize(args.purpose)
-    tier = normalize(args.tier)
-    service_account_purpose = normalize(args.service_account_purpose)
-    access_level = normalize(args.access_level)
+    app_name = normalize(args.app_name) if args.app_name else ""
+    purpose = normalize(args.purpose) if args.purpose else ""
+    tier = normalize(args.tier) if args.tier else ""
+    access_level = normalize(args.access_level) if args.access_level else "readwrite"
     secret_prefix = catalog.get("secret_settings", {}).get("prefix", "frontline-education/redis").strip("/")
 
-    expiration_suffix = ""
-    if parse_bool(args.temporary) and args.expiration_date:
-        expiration_suffix = f"_expire{args.expiration_date.replace('-', '')}"
-
-    subscription_name = args.subscription_name_override or f"sub-{FRONTLINE_SHORT_CODE}-{subscription_family}-{environment}"
-    database_name = args.database_name_override or (
-        f"{app_name}-{purpose}-{environment}-{tier}{expiration_suffix}"
-    )
-    acl_rule_name = f"acl-{subscription_family}-{app_name}-{purpose}-{environment}-{access_level}"
-    acl_role_name = (
-        f"role-{subscription_family}-{app_name}-{purpose}-{environment}-{service_account_purpose}-{access_level}"
-    )
-    acl_user_name = f"svc-{subscription_family}-{app_name}-{purpose}-{environment}-{service_account_purpose}"
-    secret_name = args.secret_name_override or f"{secret_prefix}/{environment}/{subscription_family}/{app_name}/{purpose}"
+    subscription_name = f"sub-{FRONTLINE_SHORT_CODE}-{subscription_family}-{environment}"
+    database_name = args.database_name or f"{app_name}-{purpose}-{environment}-{tier}"
+    acl_rule_name = f"acl-{subscription_family}-{app_name}-{purpose}-{environment}-{access_level}" if app_name and purpose else ""
+    acl_role_name = f"role-{subscription_family}-{app_name}-{purpose}-{environment}-{access_level}" if app_name and purpose else ""
+    acl_user_name = f"svc-{subscription_family}-{app_name}-{purpose}-{environment}" if app_name and purpose else ""
+    secret_name = f"{secret_prefix}/{environment}/{subscription_family}/{app_name}/{purpose}" if app_name and purpose else ""
 
     return {
         "subscription_name": subscription_name,
@@ -78,19 +65,13 @@ def main() -> None:
     parser.add_argument("--operation", required=True)
     parser.add_argument("--environment", required=True)
     parser.add_argument("--subscription-family", required=True)
-    parser.add_argument("--app-name", required=True)
-    parser.add_argument("--purpose", required=True)
-    parser.add_argument("--tier", required=True)
+    parser.add_argument("--app-name")
+    parser.add_argument("--purpose")
+    parser.add_argument("--tier")
+    parser.add_argument("--database-name")
     parser.add_argument("--persistence-mode", default="none")
     parser.add_argument("--data-eviction", default="allkeys-lru")
-    parser.add_argument("--application-role-arns", default="")
-    parser.add_argument("--temporary", default="false")
-    parser.add_argument("--expiration-date")
-    parser.add_argument("--service-account-purpose", default="app")
     parser.add_argument("--access-level", default="readwrite")
-    parser.add_argument("--subscription-name-override")
-    parser.add_argument("--database-name-override")
-    parser.add_argument("--secret-name-override")
     args = parser.parse_args()
 
     with Path(args.catalog_file).open("r", encoding="utf-8") as handle:

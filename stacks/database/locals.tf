@@ -23,7 +23,6 @@ locals {
         app                 = var.app_name
         purpose             = var.purpose
         tier                = var.tier
-        temporary           = tostring(var.temporary)
       }
     ) : lower(key) => lower(tostring(value))
   }
@@ -50,11 +49,6 @@ resource "terraform_data" "validation" {
     precondition {
       condition     = contains(keys(try(local.catalog.database_sizes, {})), var.tier)
       error_message = "The selected tier is not present in catalog.yaml."
-    }
-
-    precondition {
-      condition     = !var.temporary || var.expiration_date != null
-      error_message = "expiration_date must be provided when temporary is true."
     }
   }
 }

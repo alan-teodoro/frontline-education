@@ -81,43 +81,20 @@ variable "data_eviction" {
   }
 }
 
-variable "application_role_arns" {
-  description = "IAM role ARNs that should read the generated secret."
-  type        = list(string)
+variable "application_role_arn" {
+  description = "IAM role ARN that should read the generated secret."
+  type        = string
 
   validation {
-    condition     = length(var.application_role_arns) > 0
-    error_message = "At least one application_role_arn must be provided."
+    condition     = trimspace(var.application_role_arn) != ""
+    error_message = "application_role_arn must be provided."
   }
-}
-
-variable "service_account_purpose" {
-  description = "Service account purpose such as app, pipeline, readonly, or ops."
-  type        = string
-  default     = "app"
 }
 
 variable "access_level" {
   description = "Logical access level such as readwrite, readonly, or ops."
   type        = string
   default     = "readwrite"
-}
-
-variable "temporary" {
-  description = "Whether the database is temporary."
-  type        = bool
-  default     = false
-}
-
-variable "expiration_date" {
-  description = "Expiration date in YYYY-MM-DD format when temporary is true."
-  type        = string
-  default     = null
-
-  validation {
-    condition     = var.expiration_date == null || can(regex("^\\d{4}-\\d{2}-\\d{2}$", var.expiration_date))
-    error_message = "expiration_date must use YYYY-MM-DD format."
-  }
 }
 
 variable "database_name_override" {

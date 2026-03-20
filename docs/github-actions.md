@@ -5,8 +5,8 @@
 This repository now includes:
 
 - [`rediscloud-apply.yml`](/Users/alan/workspaces/alan-teodoro/frontline-education/.github/workflows/rediscloud-apply.yml): request-driven create and update workflow.
-- [`rediscloud-destroy.yml`](/Users/alan/workspaces/alan-teodoro/frontline-education/.github/workflows/rediscloud-destroy.yml): request-driven destroy workflow.
-- [`terraform-validate.yml`](/Users/alan/workspaces/alan-teodoro/frontline-education/.github/workflows/terraform-validate.yml): pull request and push validation workflow.
+- [`rediscloud-destroy.yml`](/Users/alan/workspaces/alan-teodoro/frontline-education/.github/workflows/rediscloud-destroy.yml): request-driven destroy workflow with a reduced input set.
+- [`terraform-validate.yml`](/Users/alan/workspaces/alan-teodoro/frontline-education/.github/workflows/terraform-validate.yml): validation workflow for pull requests, pushes to `main`, and manual runs through `workflow_dispatch`.
 
 ## Required GitHub repository secrets
 
@@ -100,11 +100,14 @@ Examples:
 
 ### Destroy workflow
 
-1. Resolve names and backend keys from the request.
-2. Discover whether the database and subscription exist.
-3. After approval through the dedicated `destroy-<environment>` GitHub environment, import the existing database into state when needed.
-4. Destroy the database stack.
-5. If `destroy_subscription_if_empty=true`, the workflow checks whether the subscription is empty and only then destroys it.
+1. Accept a minimal request with `environment`, `subscription_family`, and the exact `database_name`.
+2. Resolve the subscription name and backend keys from that request.
+3. Discover whether the database and subscription exist.
+4. After approval through the dedicated `destroy-<environment>` GitHub environment, import the existing database into state when needed.
+5. Destroy the database stack.
+6. If `destroy_subscription_if_empty=true`, the workflow checks whether the subscription is empty and only then destroys it.
+
+The destroy workflow intentionally does not ask for creation-only parameters such as persistence mode, eviction policy, or application role ARN.
 
 ## Important operational note
 

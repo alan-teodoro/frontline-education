@@ -41,12 +41,6 @@ Use this checklist to validate the Terraform stacks locally before moving to Git
 - [ ] Change only `persistence_mode` and confirm the update behavior is correct.
 - [ ] Change only `data_eviction` and confirm the update behavior is correct.
 
-## Temporary database scenarios
-
-- [ ] Create a temporary database with `temporary = true`.
-- [ ] Confirm the database name includes `_expireYYYYMMDD`.
-- [ ] Confirm the expiration date format is handled correctly.
-
 ## Import and adoption scenarios
 
 - [ ] Adopt an existing subscription into Terraform state.
@@ -75,7 +69,6 @@ Use this checklist to validate the Terraform stacks locally before moving to Git
 3. Validate secret creation and IAM access.
 4. Re-run apply and confirm idempotency.
 5. Test update scenarios.
-6. Test temporary database behavior.
-7. Test destroy scenarios.
-8. Test import and adoption scenarios.
-9. Validate GitHub Actions after local success.
+6. Test destroy scenarios.
+7. Test import and adoption scenarios.
+8. Validate GitHub Actions after local success.

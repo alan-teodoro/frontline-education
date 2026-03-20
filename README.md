@@ -113,4 +113,3 @@ The next layer after this repository is:
 
 - Jira or service management integration that triggers the workflow automatically.
 - Final backend hardening choices such as KMS encryption, access boundaries, and bucket policies.
-- Optional auto-cleanup flow for temporary databases based on the `_expireYYYYMMDD` suffix.

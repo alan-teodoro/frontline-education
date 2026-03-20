@@ -3,7 +3,7 @@
 ## General rules
 
 - Use lowercase only.
-- Use `a-z`, `0-9`, `-`, and `_expireYYYYMMDD` where expiration is needed.
+- Use `a-z`, `0-9`, and `-`.
 - Keep names human-readable and sortable.
 - Use `svc-` for service accounts so they cannot be confused with human admin users such as `ADMjdoe`.
 
@@ -35,7 +35,7 @@ Examples:
 Pattern:
 
 ```text
-<app>-<purpose>-<environment>-<tier>[_expireYYYYMMDD]
+<app>-<purpose>-<environment>-<tier>
 ```
 
 Segments:
@@ -44,7 +44,6 @@ Segments:
 - `<purpose>`: workload purpose such as `session`, `cache`, or `reporting`.
 - `<environment>`: `dev`, `qa`, `stage`, `prod`.
 - `<tier>`: `s`, `m`, `l`, `xl`.
-- `_expireYYYYMMDD`: only for temporary or R&D databases.
 
 Examples:
 
@@ -52,15 +51,15 @@ Examples:
 - `student-sessions-session-qa-m`
 - `student-sessions-session-stage-l`
 - `student-sessions-session-prod-xl`
-- `student-sessions-cache-dev-s_expire20260430`
-- `business-reporting-cache-qa-m_expire20260515`
+- `student-sessions-cache-dev-s`
+- `business-reporting-cache-qa-m`
 
 ### Redis users
 
 Pattern:
 
 ```text
-svc-<subscription_family>-<app>-<purpose>-<environment>-<service_purpose>
+svc-<subscription_family>-<app>-<purpose>-<environment>
 ```
 
 Segments:
@@ -70,15 +69,13 @@ Segments:
 - `<app>`: application name.
 - `<purpose>`: database purpose.
 - `<environment>`: `dev`, `qa`, `stage`, `prod`.
-- `<service_purpose>`: `app`, `pipeline`, `readonly`, and so on.
 
 Examples:
 
-- `svc-student-solutions-student-sessions-session-dev-app`
-- `svc-student-solutions-student-sessions-session-qa-app`
-- `svc-student-solutions-student-sessions-session-stage-readonly`
-- `svc-business-systems-reporting-cache-prod-app`
-- `svc-business-systems-reporting-cache-prod-pipeline`
+- `svc-student-solutions-student-sessions-session-dev`
+- `svc-student-solutions-student-sessions-session-qa`
+- `svc-student-solutions-student-sessions-session-stage`
+- `svc-business-systems-reporting-cache-prod`
 
 Human admin example for contrast:
 
@@ -89,14 +86,14 @@ Human admin example for contrast:
 Pattern:
 
 ```text
-role-<subscription_family>-<app>-<purpose>-<environment>-<service_purpose>-<access_level>
+role-<subscription_family>-<app>-<purpose>-<environment>-<access_level>
 ```
 
 Examples:
 
-- `role-student-solutions-student-sessions-session-dev-app-readwrite`
-- `role-student-solutions-student-sessions-session-qa-app-readonly`
-- `role-business-systems-reporting-cache-prod-ops-ops`
+- `role-student-solutions-student-sessions-session-dev-readwrite`
+- `role-student-solutions-student-sessions-session-qa-readonly`
+- `role-business-systems-reporting-cache-prod-ops`
 
 ### Redis ACL rules
 
@@ -140,7 +137,4 @@ The naming model maps naturally to these variables:
 - `app_name`: application identifier
 - `purpose`: database purpose
 - `tier`: `s | m | l | xl`
-- `temporary`: `true | false`
-- `expiration_date`: `YYYY-MM-DD`
-- `service_account_purpose`: `app | pipeline | readonly | ops`
 - `access_level`: `readwrite | readonly | ops`

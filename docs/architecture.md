@@ -69,9 +69,14 @@ Suggested request inputs:
 - `tier`
 - `persistence_mode`
 - `data_eviction`
-- `application_role_arns`
-- `temporary`
-- `expiration_date`
+- `application_role_arn`
+
+Suggested destroy inputs:
+
+- `environment`
+- `subscription_family`
+- `database_name`
+- `destroy_subscription_if_empty`
 
 ### Step 2: resolve internal defaults
 
@@ -105,9 +110,7 @@ Look for the database inside the target subscription.
 
 Recommended backend key pattern:
 
-- `databases/<environment>/<subscription_family>/<app_name>/<purpose>`
-
-If temporary databases are allowed for the same app and purpose, append the expiration token.
+- `databases/<environment>/<subscription_family>/<database_name>.tfstate`
 
 ## Implemented workflow behaviour
 
@@ -134,12 +137,13 @@ The workflow selects Redis Cloud credentials by environment. This is important b
 
 ### Destroy path
 
-1. Resolve the request into deterministic names and backend keys.
-2. Query Redis Cloud to detect whether the database and subscription already exist.
-3. Pause at the GitHub environment approval gate for the target environment.
-4. Import the database into state when needed.
-5. Destroy the database stack.
-6. Optionally destroy the subscription only when it is empty.
+1. Receive a reduced destroy request with `environment`, `subscription_family`, and the exact `database_name`.
+2. Resolve the subscription name and backend keys.
+3. Query Redis Cloud to detect whether the database and subscription already exist.
+4. Pause at the GitHub environment approval gate for the target environment.
+5. Import the database into state when needed.
+6. Destroy the database stack.
+7. Optionally destroy the subscription only when it is empty.
 
 ## Import strategy
 
@@ -181,5 +185,3 @@ Deletion should be explicit and state-driven:
 
 - Destroying a database stack removes only the database-level resources.
 - Destroying a subscription stack should be blocked operationally unless no managed databases remain in that subscription.
-
-For temporary databases, the future workflow can use the `_expireYYYYMMDD` suffix to identify cleanup candidates.

@@ -6,12 +6,8 @@ tier                = "s"
 persistence_mode    = "snapshot-every-6-hours"
 data_eviction       = "allkeys-lru"
 
-application_role_arns = [
-  "arn:aws:iam::111122223333:role/frontline-student-sessions-dev"
-]
+application_role_arn = "arn:aws:iam::111122223333:role/frontline-student-sessions-dev"
 
 # Optional:
-# temporary       = true
-# expiration_date = "2026-04-30"
-# access_level    = "readonly"
-# service_account_purpose = "pipeline"
+# access_level               = "readonly"
+# subscription_name_override = "sub-fle-student-solutions-dev"

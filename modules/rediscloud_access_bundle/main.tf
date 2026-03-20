@@ -15,9 +15,7 @@ terraform {
 }
 
 locals {
-  role_names = toset([
-    for arn in var.application_role_arns : element(reverse(split("/", arn)), 0)
-  ])
+  role_name = element(reverse(split("/", var.application_role_arn)), 0)
 
   acl_user_password = coalesce(var.acl_user_password_override, try(random_password.acl_user[0].result, null))
 
@@ -109,7 +107,6 @@ resource "aws_iam_policy" "secret_access" {
 }
 
 resource "aws_iam_role_policy_attachment" "secret_access" {
-  for_each   = local.role_names
-  role       = each.value
+  role       = local.role_name
   policy_arn = aws_iam_policy.secret_access.arn
 }

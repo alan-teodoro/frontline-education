@@ -26,28 +26,10 @@ variable "tier" {
   default     = ""
 }
 
-variable "service_account_purpose" {
-  description = "Service account purpose such as app, pipeline, readonly, or ops."
-  type        = string
-  default     = "app"
-}
-
 variable "access_level" {
   description = "Logical access level."
   type        = string
   default     = "readwrite"
-}
-
-variable "temporary" {
-  description = "Whether the database is temporary."
-  type        = bool
-  default     = false
-}
-
-variable "expiration_date" {
-  description = "Expiration date in YYYY-MM-DD format when temporary is true."
-  type        = string
-  default     = null
 }
 
 variable "secret_prefix" {

@@ -56,9 +56,9 @@ variable "secret_name" {
   type        = string
 }
 
-variable "application_role_arns" {
-  description = "IAM role ARNs that should be allowed to read the secret."
-  type        = list(string)
+variable "application_role_arn" {
+  description = "IAM role ARN that should be allowed to read the secret."
+  type        = string
 }
 
 variable "secret_recovery_window_in_days" {

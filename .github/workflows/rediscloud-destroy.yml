@@ -16,105 +16,21 @@ on:
         description: Subscription family or platform slice
         required: true
         type: string
-      app_name:
-        description: Application name
+      database_name:
+        description: Exact database name to destroy
         required: true
-        type: string
-      purpose:
-        description: Database purpose such as session, cache, or reporting
-        required: true
-        type: string
-      tier:
-        description: T-shirt size
-        required: true
-        type: choice
-        options:
-          - s
-          - m
-          - l
-          - xl
-      persistence_mode:
-        description: Persistence mode
-        required: true
-        type: choice
-        options:
-          - none
-          - aof-every-1-second
-          - aof-every-write
-          - snapshot-every-1-hour
-          - snapshot-every-6-hours
-          - snapshot-every-12-hours
-        default: snapshot-every-6-hours
-      data_eviction:
-        description: Data eviction policy
-        required: true
-        type: choice
-        options:
-          - allkeys-lru
-          - allkeys-lfu
-          - allkeys-random
-          - volatile-lru
-          - volatile-lfu
-          - volatile-random
-          - volatile-ttl
-          - noeviction
-        default: allkeys-lru
-      application_role_arns:
-        description: JSON array or comma-separated list of AWS IAM role ARNs that can read the secret
-        required: true
-        type: string
-      service_account_purpose:
-        description: Service account purpose
-        required: true
-        type: choice
-        options:
-          - app
-          - pipeline
-          - readonly
-          - ops
-        default: app
-      access_level:
-        description: Access level
-        required: true
-        type: choice
-        options:
-          - readwrite
-          - readonly
-          - ops
-        default: readwrite
-      temporary:
-        description: Whether the database is temporary
-        required: true
-        type: boolean
-        default: false
-      expiration_date:
-        description: Expiration date in YYYY-MM-DD format when temporary is true
-        required: false
         type: string
       destroy_subscription_if_empty:
         description: When destroying, also destroy the subscription if it becomes empty
         required: true
         type: boolean
         default: false
-      subscription_name_override:
-        description: Optional explicit subscription name
-        required: false
-        type: string
-      database_name_override:
-        description: Optional explicit database name
-        required: false
-        type: string
-      secret_name_override:
-        description: Optional explicit secret name
-        required: false
-        type: string
-
 permissions:
   contents: read
   id-token: write
 
 concurrency:
-  group: rediscloud-${{ inputs.environment }}-${{ inputs.subscription_family }}-${{ inputs.app_name }}-${{ inputs.purpose }}-destroy
+  group: rediscloud-${{ inputs.environment }}-${{ inputs.subscription_family }}-${{ inputs.database_name }}-destroy
   cancel-in-progress: false
 
 env:
@@ -148,19 +64,7 @@ jobs:
             --operation "destroy" \
             --environment "${{ inputs.environment }}" \
             --subscription-family "${{ inputs.subscription_family }}" \
-            --app-name "${{ inputs.app_name }}" \
-            --purpose "${{ inputs.purpose }}" \
-            --tier "${{ inputs.tier }}" \
-            --persistence-mode "${{ inputs.persistence_mode }}" \
-            --data-eviction "${{ inputs.data_eviction }}" \
-            --application-role-arns '${{ inputs.application_role_arns }}' \
-            --temporary "${{ inputs.temporary }}" \
-            --expiration-date "${{ inputs.expiration_date }}" \
-            --service-account-purpose "${{ inputs.service_account_purpose }}" \
-            --access-level "${{ inputs.access_level }}" \
-            --subscription-name-override "${{ inputs.subscription_name_override }}" \
-            --database-name-override "${{ inputs.database_name_override }}" \
-            --secret-name-override "${{ inputs.secret_name_override }}"
+            --database-name "${{ inputs.database_name }}"
 
       - name: Write request summary
         run: |
@@ -172,7 +76,6 @@ jobs:
             echo "- Subscription family: \`${{ inputs.subscription_family }}\`"
             echo "- Subscription name: \`${{ steps.resolve.outputs.subscription_name }}\`"
             echo "- Database name: \`${{ steps.resolve.outputs.database_name }}\`"
-            echo "- Secret name: \`${{ steps.resolve.outputs.secret_name }}\`"
             echo "- Subscription state key: \`${{ steps.resolve.outputs.subscription_state_key }}\`"
             echo "- Database state key: \`${{ steps.resolve.outputs.database_state_key }}\`"
           } >> "$GITHUB_STEP_SUMMARY"
@@ -247,26 +150,20 @@ jobs:
             --output stacks/database/request.auto.tfvars.json \
             --environment "${{ inputs.environment }}" \
             --subscription-family "${{ inputs.subscription_family }}" \
-            --subscription-name-override "${{ inputs.subscription_name_override }}" \
-            --app-name "${{ inputs.app_name }}" \
-            --purpose "${{ inputs.purpose }}" \
-            --tier "${{ inputs.tier }}" \
-            --persistence-mode "${{ inputs.persistence_mode }}" \
-            --data-eviction "${{ inputs.data_eviction }}" \
-            --application-role-arns '${{ inputs.application_role_arns }}' \
-            --temporary "${{ inputs.temporary }}" \
-            --expiration-date "${{ inputs.expiration_date }}" \
-            --service-account-purpose "${{ inputs.service_account_purpose }}" \
-            --access-level "${{ inputs.access_level }}" \
-            --database-name-override "${{ inputs.database_name_override }}" \
-            --secret-name-override "${{ inputs.secret_name_override }}"
+            --app-name "destroy-placeholder" \
+            --purpose "destroy" \
+            --tier "s" \
+            --persistence-mode "none" \
+            --data-eviction "allkeys-lru" \
+            --application-role-arn "arn:aws:iam::000000000000:role/destroy-placeholder" \
+            --access-level "readwrite" \
+            --database-name-override "${{ inputs.database_name }}"
 
           python3 scripts/write_tfvars.py \
             --stack subscription \
             --output stacks/subscription/request.auto.tfvars.json \
             --environment "${{ inputs.environment }}" \
-            --subscription-family "${{ inputs.subscription_family }}" \
-            --subscription-name-override "${{ inputs.subscription_name_override }}"
+            --subscription-family "${{ inputs.subscription_family }}"
 
       - name: Write temporary backend config
         run: |

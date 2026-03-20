@@ -33,7 +33,6 @@ output "acl_role_name" {
     local.normalize.app_name,
     local.normalize.purpose,
     local.normalize.environment,
-    local.normalize.service_purpose,
     local.normalize.access_level
   ]))
 }
@@ -45,8 +44,7 @@ output "acl_user_name" {
     local.normalize.subscription_family,
     local.normalize.app_name,
     local.normalize.purpose,
-    local.normalize.environment,
-    local.normalize.service_purpose
+    local.normalize.environment
   ]))
 }
 

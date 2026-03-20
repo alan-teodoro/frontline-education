@@ -54,7 +54,7 @@ cloud_account_name_override = "AWS Professional Services"
 
 The `AWS Professional Services` cloud account name was discovered from the current test Redis Cloud account through the Redis Cloud API. Do not keep that override in the customer baseline unless they actually plan to use BYOC.
 
-The repository also includes local-only `terraform.tfvars` files for [`stacks/subscription`](/Users/alan/workspaces/alan-teodoro/frontline-education/stacks/subscription) and [`stacks/database`](/Users/alan/workspaces/alan-teodoro/frontline-education/stacks/database). The main value you typically need to replace before a real local apply is the AWS account id inside `application_role_arns`.
+The repository also includes local-only `terraform.tfvars` files for [`stacks/subscription`](/Users/alan/workspaces/alan-teodoro/frontline-education/stacks/subscription) and [`stacks/database`](/Users/alan/workspaces/alan-teodoro/frontline-education/stacks/database). The main value you typically need to replace before a real local apply is the AWS account id inside `application_role_arn`.
 
 For local work, the stacks now use the default local backend automatically. The S3 backend is injected only by GitHub Actions during CI/CD runs.
 
