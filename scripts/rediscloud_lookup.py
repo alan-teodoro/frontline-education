@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import time
 from typing import Any, Iterable
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -15,6 +16,8 @@ from urllib.request import Request, urlopen
 
 API_BASE_DEFAULT = "https://api.redislabs.com/v1"
 USER_AGENT = "frontline-education-rediscloud-automation/1.0"
+DATABASE_LOOKUP_RETRIES = 12
+DATABASE_LOOKUP_RETRY_DELAY_SECONDS = 5
 
 
 def api_get(path: str, api_base: str, headers: dict[str, str], params: dict[str, Any] | None = None) -> Any:
@@ -149,23 +152,49 @@ def main() -> None:
     }
 
     if subscription:
-        try:
-            databases_payload = api_get(
-                f"/subscriptions/{subscription['id']}/databases",
-                args.api_base,
-                headers,
-                {"offset": 0, "limit": 100},
-            )
-        except HTTPError as exc:
-            print(
-                "Failed to query Redis Cloud databases for "
-                f"subscription {subscription['id']}: {describe_http_error(exc)}",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-        except URLError as exc:
-            print(f"Failed to query Redis Cloud databases for subscription {subscription['id']}: {exc}", file=sys.stderr)
-            sys.exit(1)
+        databases_payload = None
+
+        for attempt in range(1, DATABASE_LOOKUP_RETRIES + 1):
+            try:
+                databases_payload = api_get(
+                    f"/subscriptions/{subscription['id']}/databases",
+                    args.api_base,
+                    headers,
+                    {"offset": 0, "limit": 100},
+                )
+                break
+            except HTTPError as exc:
+                if exc.code == 404 and attempt < DATABASE_LOOKUP_RETRIES:
+                    print(
+                        "Redis Cloud database endpoint is not ready yet for "
+                        f"subscription {subscription['id']}. Retrying in "
+                        f"{DATABASE_LOOKUP_RETRY_DELAY_SECONDS}s "
+                        f"({attempt}/{DATABASE_LOOKUP_RETRIES})...",
+                        file=sys.stderr,
+                    )
+                    time.sleep(DATABASE_LOOKUP_RETRY_DELAY_SECONDS)
+                    continue
+
+                print(
+                    "Failed to query Redis Cloud databases for "
+                    f"subscription {subscription['id']}: {describe_http_error(exc)}",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+            except URLError as exc:
+                if attempt < DATABASE_LOOKUP_RETRIES:
+                    print(
+                        "Redis Cloud database lookup failed temporarily for "
+                        f"subscription {subscription['id']}: {exc}. Retrying in "
+                        f"{DATABASE_LOOKUP_RETRY_DELAY_SECONDS}s "
+                        f"({attempt}/{DATABASE_LOOKUP_RETRIES})...",
+                        file=sys.stderr,
+                    )
+                    time.sleep(DATABASE_LOOKUP_RETRY_DELAY_SECONDS)
+                    continue
+
+                print(f"Failed to query Redis Cloud databases for subscription {subscription['id']}: {exc}", file=sys.stderr)
+                sys.exit(1)
 
         databases = extract_databases(databases_payload)
         outputs["subscription_database_count"] = str(len(databases))
