@@ -1,0 +1,7 @@
+environment         = "dev"
+subscription_family = "student-solutions"
+
+# Use one of the following patterns depending on how Frontline pays for Redis Cloud:
+# payment_method = "marketplace"
+# payment_method = "credit-card"
+# payment_method_id = "123456"

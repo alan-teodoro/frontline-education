@@ -1,0 +1,112 @@
+# Frontline Education Redis Cloud Terraform
+
+This repository provides a Terraform-first foundation to automate Redis Cloud Pro subscriptions and databases on AWS for Frontline Education.
+
+The repository now includes both local Terraform stacks and GitHub Actions workflows:
+
+- Provision and manage Redis Cloud Pro subscriptions.
+- Provision and manage Redis Cloud databases, ACL rules, ACL roles, and ACL users.
+- Disable the default database user by default.
+- Disable public endpoints by default at the subscription level.
+- Generate application credentials without exposing them in Terraform outputs.
+- Store database connection details in AWS Secrets Manager.
+- Grant read access to the generated secret to one or more AWS IAM application roles.
+- Support GitHub Actions self-service apply and destroy flows with discovery and import.
+- Support Terraform validation in CI.
+
+## Why the repository is split into two stacks
+
+Redis Cloud has a natural hierarchy:
+
+- One account can contain many subscriptions.
+- One subscription can contain many databases.
+
+Because of that, this repository separates state ownership into:
+
+- `stacks/subscription`: owns one Redis Cloud subscription.
+- `stacks/database`: owns one Redis Cloud database plus ACL objects, secret storage, and IAM access.
+
+This separation matters for day-2 operations:
+
+- A single subscription can safely host many independent databases.
+- Each database request can have its own Terraform state and lifecycle.
+- Destroying one database does not endanger the subscription or sibling databases.
+- Future GitHub Actions workflows can import and update existing resources without collapsing everything into one state file.
+
+## Repository layout
+
+- `config/catalog.yaml`: Frontline Education defaults, environment settings, subscription profiles, and size mappings.
+- `docs/naming-convention.md`: naming rules and examples for subscriptions, databases, users, roles, and secrets.
+- `docs/architecture.md`: implementation notes and orchestration guidance.
+- `docs/github-actions.md`: GitHub Actions setup, secrets, variables, and approval model.
+- `docs/local-testing.md`: local test workflow using the Git-ignored Redis Cloud credential file.
+- `modules/naming`: centralized name generation.
+- `modules/rediscloud_subscription`: Redis Cloud Pro subscription module.
+- `modules/rediscloud_database`: Redis Cloud database module.
+- `modules/rediscloud_access_bundle`: ACL user/role/rule, Secrets Manager, and IAM access module.
+- `scripts`: helper utilities used by GitHub Actions to resolve names, look up Redis Cloud resources, and generate tfvars files.
+- `stacks/subscription`: root stack for a subscription.
+- `stacks/database`: root stack for a database request.
+- `.github/workflows/rediscloud-self-service.yml`: request-driven GitHub Actions workflow.
+- `.github/workflows/terraform-validate.yml`: CI validation workflow.
+
+## Important design decision for subscriptions
+
+Redis Cloud subscription `creation_plan` is only meaningful during subscription creation. In practice, that means the first database request should not define the long-term subscription capacity model.
+
+For that reason, subscription sizing is driven by `subscription_profiles` in [`config/catalog.yaml`](/Users/alan/workspaces/alan-teodoro/frontline-education/config/catalog.yaml), not by an individual database request. This keeps the first ticket from accidentally undersizing a shared subscription.
+
+## Local usage
+
+1. Update [`config/catalog.yaml`](/Users/alan/workspaces/alan-teodoro/frontline-education/config/catalog.yaml) with the correct Redis Cloud cloud account names, AWS regions, CIDR ranges, and subscription profile values for Frontline Education.
+2. Export Redis Cloud API credentials:
+
+```bash
+source scripts/use-test-env.sh
+```
+
+3. Export AWS credentials for the target environment account.
+4. Create the subscription, if needed:
+
+```bash
+cd stacks/subscription
+terraform init -backend=false
+terraform plan -var-file=terraform.tfvars.example
+```
+
+5. Create one database inside an existing subscription:
+
+```bash
+cd stacks/database
+terraform init -backend=false
+terraform plan -var-file=terraform.tfvars.example
+```
+
+## Handling existing resources in CI
+
+Terraform can only update resources it already knows in state. That means future automation must handle pre-existing resources explicitly:
+
+- If the subscription does not exist: create it with `stacks/subscription`.
+- If the subscription exists but is not in Terraform state: import it, then apply.
+- If the database does not exist: create it with `stacks/database`.
+- If the database exists but is not in Terraform state: import it, then apply.
+
+The implemented GitHub Actions model is documented in [`docs/architecture.md`](/Users/alan/workspaces/alan-teodoro/frontline-education/docs/architecture.md) and [`docs/github-actions.md`](/Users/alan/workspaces/alan-teodoro/frontline-education/docs/github-actions.md).
+
+## Test-ready setup
+
+The repository is also prepared for local Redis Cloud API testing through the Git-ignored file [`.env.rediscloud.test.local`](/Users/alan/workspaces/alan-teodoro/frontline-education/.env.rediscloud.test.local). The local test flow is documented in [`docs/local-testing.md`](/Users/alan/workspaces/alan-teodoro/frontline-education/docs/local-testing.md).
+
+## Security notes
+
+- Database credentials are not exposed in Terraform outputs.
+- The generated ACL user password is stored in Terraform state, so a secure remote backend is mandatory before production rollout.
+- The application-facing artifact is the AWS Secrets Manager secret name or ARN, not the raw credential values.
+
+## Remaining future work
+
+The next layer after this repository is:
+
+- Jira or service management integration that triggers the workflow automatically.
+- Final backend hardening choices such as KMS encryption, access boundaries, and bucket policies.
+- Optional auto-cleanup flow for temporary databases based on the `_expireYYYYMMDD` suffix.

@@ -1,0 +1,111 @@
+defaults:
+  redis_version: "8.2"
+  public_endpoint_access: false
+  enable_tls: true
+  enable_default_user: false
+  auto_minor_version_upgrade: true
+  throughput_measurement_by: operations-per-second
+  support_oss_cluster_api: false
+  external_endpoint_for_oss_cluster_api: false
+  tags:
+    managed_by: terraform
+    organization: frontline-education
+  maintenance_windows:
+    mode: manual
+    window:
+      start_hour: 2
+      duration_in_hours: 4
+      days:
+        - Sunday
+  database_alerts:
+    - name: dataset-size
+      value: 80
+    - name: latency
+      value: 10
+    - name: throughput-higher-than
+      value: 1000
+
+secret_settings:
+  prefix: frontline-education/redis
+  recovery_window_in_days: 0
+
+environments:
+  dev:
+    aws_region: us-east-1
+    region: us-east-1
+    cloud_account_name: frontline-dev
+    networking_deployment_cidr: 10.10.0.0/24
+    multiple_availability_zones: false
+    preferred_availability_zones: []
+  qa:
+    aws_region: us-east-1
+    region: us-east-1
+    cloud_account_name: frontline-qa
+    networking_deployment_cidr: 10.20.0.0/24
+    multiple_availability_zones: false
+    preferred_availability_zones: []
+  stage:
+    aws_region: us-east-1
+    region: us-east-1
+    cloud_account_name: frontline-stage
+    networking_deployment_cidr: 10.30.0.0/24
+    multiple_availability_zones: true
+    preferred_availability_zones:
+      - use1-az1
+      - use1-az2
+      - use1-az4
+  prod:
+    aws_region: us-east-1
+    region: us-east-1
+    cloud_account_name: frontline-prod
+    networking_deployment_cidr: 10.40.0.0/24
+    multiple_availability_zones: true
+    preferred_availability_zones:
+      - use1-az1
+      - use1-az2
+      - use1-az4
+
+subscription_profiles:
+  shared:
+    max_tier: xl
+    planned_database_quantity: 25
+    memory_storage: ram
+    replication: true
+    support_oss_cluster_api: false
+    modules: []
+  student-solutions:
+    max_tier: l
+    planned_database_quantity: 20
+    memory_storage: ram
+    replication: true
+    support_oss_cluster_api: false
+    modules: []
+  business-systems:
+    max_tier: l
+    planned_database_quantity: 15
+    memory_storage: ram
+    replication: true
+    support_oss_cluster_api: false
+    modules: []
+
+database_sizes:
+  s:
+    dataset_size_in_gb: 1
+    throughput_measurement_by: operations-per-second
+    throughput_measurement_value: 1000
+    replication: true
+  m:
+    dataset_size_in_gb: 5
+    throughput_measurement_by: operations-per-second
+    throughput_measurement_value: 5000
+    replication: true
+  l:
+    dataset_size_in_gb: 10
+    throughput_measurement_by: operations-per-second
+    throughput_measurement_value: 10000
+    replication: true
+  xl:
+    dataset_size_in_gb: 25
+    throughput_measurement_by: operations-per-second
+    throughput_measurement_value: 20000
+    replication: true
