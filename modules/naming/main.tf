@@ -5,14 +5,11 @@ locals {
     app_name            = trim(replace(replace(lower(var.app_name), "/[^a-z0-9-]/", "-"), "/-+/", "-"), "-")
     purpose             = trim(replace(replace(lower(var.purpose), "/[^a-z0-9-]/", "-"), "/-+/", "-"), "-")
     tier                = trim(replace(replace(lower(var.tier), "/[^a-z0-9-]/", "-"), "/-+/", "-"), "-")
-    access_level        = trim(replace(replace(lower(var.access_level), "/[^a-z0-9-]/", "-"), "/-+/", "-"), "-")
     secret_prefix       = trim(replace(replace(lower(var.secret_prefix), "/[^a-z0-9/-]/", "-"), "/-+/", "-"), "/")
   }
 
   database_name = join("-", compact([
     local.normalize.app_name,
-    local.normalize.purpose,
-    local.normalize.environment,
-    local.normalize.tier
+    local.normalize.purpose
   ]))
 }

@@ -3,8 +3,7 @@ output "subscription_name" {
   value = join("-", compact([
     "sub",
     "fle",
-    local.normalize.subscription_family,
-    local.normalize.environment
+    local.normalize.subscription_family
   ]))
 }
 
@@ -19,9 +18,7 @@ output "acl_rule_name" {
     "acl",
     local.normalize.subscription_family,
     local.normalize.app_name,
-    local.normalize.purpose,
-    local.normalize.environment,
-    local.normalize.access_level
+    local.normalize.purpose
   ]))
 }
 
@@ -31,9 +28,7 @@ output "acl_role_name" {
     "role",
     local.normalize.subscription_family,
     local.normalize.app_name,
-    local.normalize.purpose,
-    local.normalize.environment,
-    local.normalize.access_level
+    local.normalize.purpose
   ]))
 }
 
@@ -43,8 +38,7 @@ output "acl_user_name" {
     "svc",
     local.normalize.subscription_family,
     local.normalize.app_name,
-    local.normalize.purpose,
-    local.normalize.environment
+    local.normalize.purpose
   ]))
 }
 

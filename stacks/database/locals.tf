@@ -6,12 +6,7 @@ locals {
   size_profile         = try(local.catalog.database_sizes[var.tier], {})
   aws_region           = try(local.environment_settings.aws_region, local.environment_settings.region)
 
-  acl_rule_catalog = {
-    readwrite = "+@all -@dangerous +info ~*"
-    readonly  = "+@read +info ~*"
-    ops       = "+@all -@dangerous +info ~*"
-    pipeline  = "+@all -@dangerous +info ~*"
-  }
+  default_acl_rule = "+@all -@dangerous +info ~*"
 
   redis_tags = {
     for key, value in merge(

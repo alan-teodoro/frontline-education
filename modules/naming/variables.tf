@@ -1,5 +1,5 @@
 variable "environment" {
-  description = "Environment name."
+  description = "Environment name used for secret paths and operational context."
   type        = string
 }
 
@@ -21,15 +21,9 @@ variable "purpose" {
 }
 
 variable "tier" {
-  description = "T-shirt size used in the database name."
+  description = "T-shirt size used for provisioning, not for the database name."
   type        = string
   default     = ""
-}
-
-variable "access_level" {
-  description = "Logical access level."
-  type        = string
-  default     = "readwrite"
 }
 
 variable "secret_prefix" {

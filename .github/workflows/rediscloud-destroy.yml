@@ -156,7 +156,6 @@ jobs:
             --persistence-mode "none" \
             --data-eviction "allkeys-lru" \
             --application-role-arn "arn:aws:iam::000000000000:role/destroy-placeholder" \
-            --access-level "readwrite" \
             --database-name-override "${{ inputs.database_name }}"
 
           python3 scripts/write_tfvars.py \

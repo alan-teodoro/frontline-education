@@ -91,12 +91,6 @@ variable "application_role_arn" {
   }
 }
 
-variable "access_level" {
-  description = "Logical access level such as readwrite, readonly, or ops."
-  type        = string
-  default     = "readwrite"
-}
-
 variable "database_name_override" {
   description = "Optional explicit database name."
   type        = string

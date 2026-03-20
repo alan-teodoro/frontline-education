@@ -82,7 +82,7 @@ The GitHub Actions workflow writes a temporary S3 backend configuration at runti
 Examples:
 
 - `subscriptions/dev/student-solutions.tfstate`
-- `databases/dev/student-solutions/student-sessions-session-dev-s.tfstate`
+- `databases/dev/student-solutions/student-sessions-session.tfstate`
 
 ## Workflow behaviour
 

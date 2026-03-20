@@ -26,14 +26,13 @@ def build_names(catalog: dict[str, Any], args: argparse.Namespace) -> dict[str, 
     app_name = normalize(args.app_name) if args.app_name else ""
     purpose = normalize(args.purpose) if args.purpose else ""
     tier = normalize(args.tier) if args.tier else ""
-    access_level = normalize(args.access_level) if args.access_level else "readwrite"
     secret_prefix = catalog.get("secret_settings", {}).get("prefix", "frontline-education/redis").strip("/")
 
-    subscription_name = f"sub-{FRONTLINE_SHORT_CODE}-{subscription_family}-{environment}"
-    database_name = args.database_name or f"{app_name}-{purpose}-{environment}-{tier}"
-    acl_rule_name = f"acl-{subscription_family}-{app_name}-{purpose}-{environment}-{access_level}" if app_name and purpose else ""
-    acl_role_name = f"role-{subscription_family}-{app_name}-{purpose}-{environment}-{access_level}" if app_name and purpose else ""
-    acl_user_name = f"svc-{subscription_family}-{app_name}-{purpose}-{environment}" if app_name and purpose else ""
+    subscription_name = f"sub-{FRONTLINE_SHORT_CODE}-{subscription_family}"
+    database_name = args.database_name or f"{app_name}-{purpose}"
+    acl_rule_name = f"acl-{subscription_family}-{app_name}-{purpose}" if app_name and purpose else ""
+    acl_role_name = f"role-{subscription_family}-{app_name}-{purpose}" if app_name and purpose else ""
+    acl_user_name = f"svc-{subscription_family}-{app_name}-{purpose}" if app_name and purpose else ""
     secret_name = f"{secret_prefix}/{environment}/{subscription_family}/{app_name}/{purpose}" if app_name and purpose else ""
 
     return {
@@ -71,7 +70,6 @@ def main() -> None:
     parser.add_argument("--database-name")
     parser.add_argument("--persistence-mode", default="none")
     parser.add_argument("--data-eviction", default="allkeys-lru")
-    parser.add_argument("--access-level", default="readwrite")
     args = parser.parse_args()
 
     with Path(args.catalog_file).open("r", encoding="utf-8") as handle:

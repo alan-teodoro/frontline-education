@@ -10,7 +10,8 @@ The repository now includes both local Terraform stacks and GitHub Actions workf
 - Disable public endpoints by default at the subscription level.
 - Generate application credentials without exposing them in Terraform outputs.
 - Store database connection details in AWS Secrets Manager.
-- Grant read access to the generated secret to one or more AWS IAM application roles.
+- Grant read access to the generated secret to the target AWS IAM application role.
+- Create a single default ACL bundle for the application bootstrap user with read/write access.
 - Support separate GitHub Actions apply and destroy flows with discovery and import.
 - Support environment-specific Redis Cloud credentials so each environment can target a different Redis Cloud account.
 - Support Terraform validation in CI.
@@ -33,6 +34,8 @@ This separation matters for day-2 operations:
 - Each database request can have its own Terraform state and lifecycle.
 - Destroying one database does not endanger the subscription or sibling databases.
 - Future GitHub Actions workflows can import and update existing resources without collapsing everything into one state file.
+
+The current naming model assumes one Redis Cloud account per environment. Because of that, environment stays in state keys, tags, secret paths, and GitHub approvals, but it is no longer embedded in Redis resource names.
 
 ## Repository layout
 

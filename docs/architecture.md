@@ -38,7 +38,7 @@ The database stack owns:
 - one ACL role
 - one ACL user
 - one AWS Secrets Manager secret and secret value
-- one AWS IAM policy plus attachments to the application roles
+- one AWS IAM policy plus attachment to the target application role
 
 This allows one subscription to host many databases, each with isolated state and lifecycle.
 
@@ -164,6 +164,8 @@ terraform import module.database.rediscloud_subscription_database.this <subscrip
 ### ACL and secret resources
 
 The ACL rule, ACL role, ACL user, AWS secret, and IAM policy are all deterministic from naming inputs. If those already exist outside Terraform, they should also be imported before the first managed apply.
+
+The repository now assumes a single default ACL profile for the bootstrap application user: read and write access. If the customer wants additional users or narrower privileges later, they can create them after the initial database provisioning flow.
 
 ## Approval model for environments
 

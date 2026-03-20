@@ -14,7 +14,7 @@
 Pattern:
 
 ```text
-sub-fle-<subscription_family>-<environment>
+sub-fle-<subscription_family>
 ```
 
 Segments:
@@ -22,44 +22,39 @@ Segments:
 - `sub`: resource type prefix.
 - `fle`: fixed Frontline Education short code.
 - `<subscription_family>`: shared platform, pillar, or app family.
-- `<environment>`: one of `dev`, `qa`, `stage`, `prod`.
 
 Examples:
 
-- `sub-fle-student-solutions-dev`
-- `sub-fle-business-systems-qa`
-- `sub-fle-shared-prod`
+- `sub-fle-student-solutions`
+- `sub-fle-business-systems`
+- `sub-fle-shared`
 
 ### Redis Cloud databases
 
 Pattern:
 
 ```text
-<app>-<purpose>-<environment>-<tier>
+<app>-<purpose>
 ```
 
 Segments:
 
 - `<app>`: application identifier.
 - `<purpose>`: workload purpose such as `session`, `cache`, or `reporting`.
-- `<environment>`: `dev`, `qa`, `stage`, `prod`.
-- `<tier>`: `s`, `m`, `l`, `xl`.
 
 Examples:
 
-- `student-sessions-session-dev-s`
-- `student-sessions-session-qa-m`
-- `student-sessions-session-stage-l`
-- `student-sessions-session-prod-xl`
-- `student-sessions-cache-dev-s`
-- `business-reporting-cache-qa-m`
+- `student-sessions-session`
+- `student-sessions-cache`
+- `business-reporting-cache`
+- `student-profile-session`
 
 ### Redis users
 
 Pattern:
 
 ```text
-svc-<subscription_family>-<app>-<purpose>-<environment>
+svc-<subscription_family>-<app>-<purpose>
 ```
 
 Segments:
@@ -68,14 +63,13 @@ Segments:
 - `<subscription_family>`: prevents cross-subscription naming collisions.
 - `<app>`: application name.
 - `<purpose>`: database purpose.
-- `<environment>`: `dev`, `qa`, `stage`, `prod`.
 
 Examples:
 
-- `svc-student-solutions-student-sessions-session-dev`
-- `svc-student-solutions-student-sessions-session-qa`
-- `svc-student-solutions-student-sessions-session-stage`
-- `svc-business-systems-reporting-cache-prod`
+- `svc-student-solutions-student-sessions-session`
+- `svc-student-solutions-student-sessions-cache`
+- `svc-business-systems-reporting-cache`
+- `svc-shared-student-profile-session`
 
 Human admin example for contrast:
 
@@ -86,28 +80,28 @@ Human admin example for contrast:
 Pattern:
 
 ```text
-role-<subscription_family>-<app>-<purpose>-<environment>-<access_level>
+role-<subscription_family>-<app>-<purpose>
 ```
 
 Examples:
 
-- `role-student-solutions-student-sessions-session-dev-readwrite`
-- `role-student-solutions-student-sessions-session-qa-readonly`
-- `role-business-systems-reporting-cache-prod-ops`
+- `role-student-solutions-student-sessions-session`
+- `role-student-solutions-student-sessions-cache`
+- `role-business-systems-reporting-cache`
 
 ### Redis ACL rules
 
 Pattern:
 
 ```text
-acl-<subscription_family>-<app>-<purpose>-<environment>-<access_level>
+acl-<subscription_family>-<app>-<purpose>
 ```
 
 Examples:
 
-- `acl-student-solutions-student-sessions-session-dev-readwrite`
-- `acl-student-solutions-student-sessions-session-qa-readonly`
-- `acl-business-systems-reporting-cache-prod-ops`
+- `acl-student-solutions-student-sessions-session`
+- `acl-student-solutions-student-sessions-cache`
+- `acl-business-systems-reporting-cache`
 
 ### AWS Secrets Manager secrets
 
@@ -132,9 +126,8 @@ Examples:
 
 The naming model maps naturally to these variables:
 
-- `environment`: `dev | qa | stage | prod`
+- `environment`: `dev | qa | stage | prod` for state keys, secret paths, tags, and approval routing
 - `subscription_family`: workload family or platform slice
 - `app_name`: application identifier
 - `purpose`: database purpose
-- `tier`: `s | m | l | xl`
-- `access_level`: `readwrite | readonly | ops`
+- `tier`: `s | m | l | xl` for provisioning only

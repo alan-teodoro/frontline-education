@@ -6,7 +6,6 @@ module "naming" {
   app_name            = var.app_name
   purpose             = var.purpose
   tier                = var.tier
-  access_level        = var.access_level
   secret_prefix       = try(local.secret_settings.prefix, "frontline-education/redis")
 }
 
@@ -53,7 +52,7 @@ module "access_bundle" {
   acl_role_name                  = module.naming.acl_role_name
   acl_user_name                  = module.naming.acl_user_name
   acl_user_password_override     = var.acl_user_password_override
-  acl_rule_string                = coalesce(var.acl_rule_string_override, lookup(local.acl_rule_catalog, var.access_level, local.acl_rule_catalog.readwrite))
+  acl_rule_string                = coalesce(var.acl_rule_string_override, local.default_acl_rule)
   secret_name                    = coalesce(var.secret_name_override, module.naming.secret_name)
   application_role_arn           = var.application_role_arn
   secret_recovery_window_in_days = try(local.secret_settings.recovery_window_in_days, 0)

@@ -63,15 +63,6 @@ on:
         description: AWS IAM role ARN that can read the secret
         required: true
         type: string
-      access_level:
-        description: Access level
-        required: true
-        type: choice
-        options:
-          - readwrite
-          - readonly
-          - ops
-        default: readwrite
 permissions:
   contents: read
   id-token: write
@@ -115,8 +106,7 @@ jobs:
             --purpose "${{ inputs.purpose }}" \
             --tier "${{ inputs.tier }}" \
             --persistence-mode "${{ inputs.persistence_mode }}" \
-            --data-eviction "${{ inputs.data_eviction }}" \
-            --access-level "${{ inputs.access_level }}"
+            --data-eviction "${{ inputs.data_eviction }}"
 
       - name: Write request summary
         run: |
@@ -303,8 +293,7 @@ jobs:
             --tier "${{ inputs.tier }}" \
             --persistence-mode "${{ inputs.persistence_mode }}" \
             --data-eviction "${{ inputs.data_eviction }}" \
-            --application-role-arn "${{ inputs.application_role_arn }}" \
-            --access-level "${{ inputs.access_level }}"
+            --application-role-arn "${{ inputs.application_role_arn }}"
 
       - name: Write temporary database backend config
         working-directory: stacks/database
@@ -415,8 +404,7 @@ jobs:
             --tier "${{ inputs.tier }}" \
             --persistence-mode "${{ inputs.persistence_mode }}" \
             --data-eviction "${{ inputs.data_eviction }}" \
-            --application-role-arn "${{ inputs.application_role_arn }}" \
-            --access-level "${{ inputs.access_level }}"
+            --application-role-arn "${{ inputs.application_role_arn }}"
 
       - name: Write temporary backend config
         run: |

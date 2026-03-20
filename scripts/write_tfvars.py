@@ -35,7 +35,6 @@ def main() -> None:
     parser.add_argument("--persistence-mode")
     parser.add_argument("--data-eviction")
     parser.add_argument("--application-role-arn")
-    parser.add_argument("--access-level", default="readwrite")
     parser.add_argument("--database-name-override")
     parser.add_argument("--secret-name-override")
     args = parser.parse_args()
@@ -64,7 +63,6 @@ def main() -> None:
                 "persistence_mode": blank_to_none(args.persistence_mode),
                 "data_eviction": blank_to_none(args.data_eviction),
                 "application_role_arn": blank_to_none(args.application_role_arn),
-                "access_level": blank_to_none(args.access_level),
                 "database_name_override": blank_to_none(args.database_name_override),
                 "secret_name_override": blank_to_none(args.secret_name_override),
             }

@@ -9,5 +9,4 @@ data_eviction       = "allkeys-lru"
 application_role_arn = "arn:aws:iam::111122223333:role/frontline-student-sessions-dev"
 
 # Optional:
-# access_level               = "readonly"
-# subscription_name_override = "sub-fle-student-solutions-dev"
+# subscription_name_override = "sub-fle-student-solutions"
