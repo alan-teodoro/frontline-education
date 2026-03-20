@@ -73,7 +73,7 @@ Redis Cloud credentials are selected from the workflow input environment, so dis
 
 ## Backend layout
 
-The workflow uses the S3 backend with native lockfile support (`use_lockfile = true`) and these key patterns:
+The GitHub Actions workflow writes a temporary S3 backend configuration at runtime, with native lockfile support (`use_lockfile = true`), and uses these key patterns:
 
 - subscription state: `subscriptions/<environment>/<subscription_family>.tfstate`
 - database state: `databases/<environment>/<subscription_family>/<database_name>.tfstate`

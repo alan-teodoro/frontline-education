@@ -71,7 +71,7 @@ source scripts/use-test-env.sh
 
 ```bash
 cd stacks/subscription
-terraform init -backend=false
+terraform init
 terraform plan -var-file=terraform.tfvars.example
 ```
 
@@ -79,7 +79,7 @@ terraform plan -var-file=terraform.tfvars.example
 
 ```bash
 cd stacks/database
-terraform init -backend=false
+terraform init
 terraform plan -var-file=terraform.tfvars.example
 ```
 

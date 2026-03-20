@@ -257,6 +257,17 @@ jobs:
             --subscription-family "${{ inputs.subscription_family }}" \
             --subscription-name-override "${{ inputs.subscription_name_override }}"
 
+      - name: Write temporary subscription backend config
+        working-directory: stacks/subscription
+        run: |
+          cat > backend.generated.tf <<'EOF'
+          terraform {
+            backend "s3" {
+              use_lockfile = true
+            }
+          }
+          EOF
+
       - name: Terraform init
         working-directory: stacks/subscription
         run: |
@@ -354,6 +365,17 @@ jobs:
             --access-level "${{ inputs.access_level }}" \
             --database-name-override "${{ inputs.database_name_override }}" \
             --secret-name-override "${{ inputs.secret_name_override }}"
+
+      - name: Write temporary database backend config
+        working-directory: stacks/database
+        run: |
+          cat > backend.generated.tf <<'EOF'
+          terraform {
+            backend "s3" {
+              use_lockfile = true
+            }
+          }
+          EOF
 
       - name: Terraform init
         working-directory: stacks/database
@@ -462,6 +484,24 @@ jobs:
             --access-level "${{ inputs.access_level }}" \
             --database-name-override "${{ inputs.database_name_override }}" \
             --secret-name-override "${{ inputs.secret_name_override }}"
+
+      - name: Write temporary backend config
+        run: |
+          cat > stacks/subscription/backend.generated.tf <<'EOF'
+          terraform {
+            backend "s3" {
+              use_lockfile = true
+            }
+          }
+          EOF
+
+          cat > stacks/database/backend.generated.tf <<'EOF'
+          terraform {
+            backend "s3" {
+              use_lockfile = true
+            }
+          }
+          EOF
 
       - name: Apply subscription stack
         working-directory: stacks/subscription
@@ -579,6 +619,24 @@ jobs:
             --environment "${{ inputs.environment }}" \
             --subscription-family "${{ inputs.subscription_family }}" \
             --subscription-name-override "${{ inputs.subscription_name_override }}"
+
+      - name: Write temporary backend config
+        run: |
+          cat > stacks/subscription/backend.generated.tf <<'EOF'
+          terraform {
+            backend "s3" {
+              use_lockfile = true
+            }
+          }
+          EOF
+
+          cat > stacks/database/backend.generated.tf <<'EOF'
+          terraform {
+            backend "s3" {
+              use_lockfile = true
+            }
+          }
+          EOF
 
       - name: Destroy database stack when present
         working-directory: stacks/database
