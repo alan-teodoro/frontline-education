@@ -78,6 +78,7 @@ Suggested request inputs:
 Read the repository catalog to obtain:
 
 - Redis Cloud cloud account name
+- Redis Cloud environment target account model
 - AWS region
 - deployment CIDR
 - subscription profile
@@ -111,6 +112,8 @@ If temporary databases are allowed for the same app and purpose, append the expi
 ## Implemented workflow behaviour
 
 The self-service workflow is [`rediscloud-self-service.yml`](/Users/alan/workspaces/alan-teodoro/frontline-education/.github/workflows/rediscloud-self-service.yml).
+
+The workflow selects Redis Cloud credentials by environment. This is important because the customer may use a different Redis Cloud account for `dev`, `qa`, `stage`, and `prod`, even if the Terraform structure and naming rules stay the same.
 
 ### Apply path
 

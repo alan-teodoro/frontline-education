@@ -189,6 +189,9 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - resolve_request
+    env:
+      REDISCLOUD_ACCESS_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_ACCESS_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_ACCESS_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_ACCESS_KEY_STAGE || secrets.REDISCLOUD_ACCESS_KEY_PROD }}
+      REDISCLOUD_SECRET_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_SECRET_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_SECRET_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_SECRET_KEY_STAGE || secrets.REDISCLOUD_SECRET_KEY_PROD }}
     outputs:
       subscription_exists: ${{ steps.lookup.outputs.subscription_exists }}
       subscription_id: ${{ steps.lookup.outputs.subscription_id }}
@@ -202,9 +205,6 @@ jobs:
 
       - name: Lookup existing Redis Cloud resources
         id: lookup
-        env:
-          REDISCLOUD_ACCESS_KEY: ${{ secrets.REDISCLOUD_ACCESS_KEY }}
-          REDISCLOUD_SECRET_KEY: ${{ secrets.REDISCLOUD_SECRET_KEY }}
         run: |
           python3 scripts/rediscloud_lookup.py \
             --subscription-name "${{ needs.resolve_request.outputs.subscription_name }}" \
@@ -232,8 +232,8 @@ jobs:
     env:
       AWS_ROLE_TO_ASSUME: ${{ inputs.environment == 'dev' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_DEV || inputs.environment == 'qa' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_QA || inputs.environment == 'stage' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_STAGE || vars.AWS_GITHUB_ACTIONS_ROLE_ARN_PROD }}
       TF_IN_AUTOMATION: "true"
-      REDISCLOUD_ACCESS_KEY: ${{ secrets.REDISCLOUD_ACCESS_KEY }}
-      REDISCLOUD_SECRET_KEY: ${{ secrets.REDISCLOUD_SECRET_KEY }}
+      REDISCLOUD_ACCESS_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_ACCESS_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_ACCESS_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_ACCESS_KEY_STAGE || secrets.REDISCLOUD_ACCESS_KEY_PROD }}
+      REDISCLOUD_SECRET_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_SECRET_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_SECRET_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_SECRET_KEY_STAGE || secrets.REDISCLOUD_SECRET_KEY_PROD }}
 
     steps:
       - name: Checkout repository
@@ -318,8 +318,8 @@ jobs:
     env:
       AWS_ROLE_TO_ASSUME: ${{ inputs.environment == 'dev' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_DEV || inputs.environment == 'qa' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_QA || inputs.environment == 'stage' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_STAGE || vars.AWS_GITHUB_ACTIONS_ROLE_ARN_PROD }}
       TF_IN_AUTOMATION: "true"
-      REDISCLOUD_ACCESS_KEY: ${{ secrets.REDISCLOUD_ACCESS_KEY }}
-      REDISCLOUD_SECRET_KEY: ${{ secrets.REDISCLOUD_SECRET_KEY }}
+      REDISCLOUD_ACCESS_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_ACCESS_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_ACCESS_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_ACCESS_KEY_STAGE || secrets.REDISCLOUD_ACCESS_KEY_PROD }}
+      REDISCLOUD_SECRET_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_SECRET_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_SECRET_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_SECRET_KEY_STAGE || secrets.REDISCLOUD_SECRET_KEY_PROD }}
 
     steps:
       - name: Checkout repository
@@ -419,8 +419,8 @@ jobs:
     env:
       AWS_ROLE_TO_ASSUME: ${{ inputs.environment == 'dev' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_DEV || inputs.environment == 'qa' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_QA || inputs.environment == 'stage' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_STAGE || vars.AWS_GITHUB_ACTIONS_ROLE_ARN_PROD }}
       TF_IN_AUTOMATION: "true"
-      REDISCLOUD_ACCESS_KEY: ${{ secrets.REDISCLOUD_ACCESS_KEY }}
-      REDISCLOUD_SECRET_KEY: ${{ secrets.REDISCLOUD_SECRET_KEY }}
+      REDISCLOUD_ACCESS_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_ACCESS_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_ACCESS_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_ACCESS_KEY_STAGE || secrets.REDISCLOUD_ACCESS_KEY_PROD }}
+      REDISCLOUD_SECRET_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_SECRET_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_SECRET_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_SECRET_KEY_STAGE || secrets.REDISCLOUD_SECRET_KEY_PROD }}
 
     steps:
       - name: Checkout repository
@@ -479,9 +479,6 @@ jobs:
 
       - name: Refresh discovery after subscription apply
         id: refresh_lookup
-        env:
-          REDISCLOUD_ACCESS_KEY: ${{ secrets.REDISCLOUD_ACCESS_KEY }}
-          REDISCLOUD_SECRET_KEY: ${{ secrets.REDISCLOUD_SECRET_KEY }}
         run: |
           python3 scripts/rediscloud_lookup.py \
             --subscription-name "${{ needs.resolve_request.outputs.subscription_name }}" \
@@ -539,8 +536,8 @@ jobs:
     env:
       AWS_ROLE_TO_ASSUME: ${{ inputs.environment == 'dev' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_DEV || inputs.environment == 'qa' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_QA || inputs.environment == 'stage' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_STAGE || vars.AWS_GITHUB_ACTIONS_ROLE_ARN_PROD }}
       TF_IN_AUTOMATION: "true"
-      REDISCLOUD_ACCESS_KEY: ${{ secrets.REDISCLOUD_ACCESS_KEY }}
-      REDISCLOUD_SECRET_KEY: ${{ secrets.REDISCLOUD_SECRET_KEY }}
+      REDISCLOUD_ACCESS_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_ACCESS_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_ACCESS_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_ACCESS_KEY_STAGE || secrets.REDISCLOUD_ACCESS_KEY_PROD }}
+      REDISCLOUD_SECRET_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_SECRET_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_SECRET_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_SECRET_KEY_STAGE || secrets.REDISCLOUD_SECRET_KEY_PROD }}
 
     steps:
       - name: Checkout repository
@@ -604,9 +601,6 @@ jobs:
       - name: Refresh discovery after database destroy
         id: refresh_lookup
         if: ${{ inputs.destroy_subscription_if_empty }}
-        env:
-          REDISCLOUD_ACCESS_KEY: ${{ secrets.REDISCLOUD_ACCESS_KEY }}
-          REDISCLOUD_SECRET_KEY: ${{ secrets.REDISCLOUD_SECRET_KEY }}
         run: |
           python3 scripts/rediscloud_lookup.py \
             --subscription-name "${{ needs.resolve_request.outputs.subscription_name }}" \

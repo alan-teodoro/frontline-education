@@ -12,6 +12,7 @@ The repository now includes both local Terraform stacks and GitHub Actions workf
 - Store database connection details in AWS Secrets Manager.
 - Grant read access to the generated secret to one or more AWS IAM application roles.
 - Support GitHub Actions self-service apply and destroy flows with discovery and import.
+- Support environment-specific Redis Cloud credentials so each environment can target a different Redis Cloud account.
 - Support Terraform validation in CI.
 
 ## Why the repository is split into two stacks

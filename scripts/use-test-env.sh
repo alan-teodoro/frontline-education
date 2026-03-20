@@ -30,3 +30,6 @@ set +a
 echo "Redis Cloud test credentials exported for the current shell context."
 echo "REDISCLOUD_ACCESS_KEY is set."
 echo "REDISCLOUD_SECRET_KEY is set."
+if [[ -n "${REDISCLOUD_ACCOUNT_ID:-}" ]]; then
+  echo "REDISCLOUD_ACCOUNT_ID=${REDISCLOUD_ACCOUNT_ID}"
+fi

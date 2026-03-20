@@ -9,15 +9,21 @@ This repository now includes:
 
 ## Required GitHub repository secrets
 
-- `REDISCLOUD_ACCESS_KEY`: Redis Cloud account API key.
-- `REDISCLOUD_SECRET_KEY`: Redis Cloud user API key.
+- `REDISCLOUD_ACCESS_KEY_DEV`
+- `REDISCLOUD_SECRET_KEY_DEV`
+- `REDISCLOUD_ACCESS_KEY_QA`
+- `REDISCLOUD_SECRET_KEY_QA`
+- `REDISCLOUD_ACCESS_KEY_STAGE`
+- `REDISCLOUD_SECRET_KEY_STAGE`
+- `REDISCLOUD_ACCESS_KEY_PROD`
+- `REDISCLOUD_SECRET_KEY_PROD`
 - `TF_STATE_BUCKET`: S3 bucket used as the Terraform remote backend.
 - `TF_STATE_REGION`: AWS region for the Terraform state bucket.
 
 Mapping reminder:
 
-- Redis Cloud `account key` -> `REDISCLOUD_ACCESS_KEY`
-- Redis Cloud user/API secret key -> `REDISCLOUD_SECRET_KEY`
+- Redis Cloud `account key` -> `REDISCLOUD_ACCESS_KEY_<ENV>`
+- Redis Cloud user/API secret key -> `REDISCLOUD_SECRET_KEY_<ENV>`
 
 ## Required GitHub repository variables
 
@@ -29,6 +35,8 @@ Mapping reminder:
 These role ARNs are used by `aws-actions/configure-aws-credentials` with GitHub OIDC.
 
 Billing is resolved from [`config/catalog.yaml`](/Users/alan/workspaces/alan-teodoro/frontline-education/config/catalog.yaml). For the current test setup, the workflow uses `payment_method=credit-card` and looks up the configured card automatically by `credit_card_type` and `credit_card_last_four`.
+
+If Frontline uses one Redis Cloud account per environment, store a different Redis Cloud API key pair in each environment-specific secret pair above. If multiple environments share the same Redis Cloud account, the same key pair can be copied into more than one suffix.
 
 ## Recommended GitHub environments
 
@@ -60,6 +68,8 @@ The self-service workflow uses:
 - `environment: destroy-<target-environment>` on destroy jobs
 
 That means approvals are enforced by GitHub, not by custom shell logic.
+
+Redis Cloud credentials are selected from the workflow input environment, so discovery, plan, apply, and destroy all run against the Redis Cloud account mapped to `dev`, `qa`, `stage`, or `prod`.
 
 ## Backend layout
 

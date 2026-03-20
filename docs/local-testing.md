@@ -10,6 +10,7 @@ That file exports:
 
 - `REDISCLOUD_ACCESS_KEY`
 - `REDISCLOUD_SECRET_KEY`
+- `REDISCLOUD_ACCOUNT_ID` (optional, for documentation/bootstrap only)
 
 Mapping reminder:
 
@@ -58,12 +59,15 @@ The `AWS Professional Services` cloud account name was discovered from the curre
 If the target repository is already configured in GitHub CLI:
 
 ```bash
-./scripts/configure-github-secrets.sh
+./scripts/configure-github-secrets.sh dev
 ```
 
 This script sets:
 
-- `REDISCLOUD_ACCESS_KEY`
-- `REDISCLOUD_SECRET_KEY`
+- `REDISCLOUD_ACCESS_KEY_DEV`
+- `REDISCLOUD_SECRET_KEY_DEV`
+- optionally `REDISCLOUD_ACCOUNT_ID_DEV` when `REDISCLOUD_ACCOUNT_ID` is present in the local env file
 
 It does not create the AWS backend secrets or repository variables, because those are specific to Frontline's AWS environments and GitHub repository settings.
+
+For the current personal test setup, the Redis Cloud account id is `1977930`. The customer design can still use different Redis Cloud accounts per environment by populating the `QA`, `STAGE`, and `PROD` credential pairs separately.
