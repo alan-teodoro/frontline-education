@@ -5,6 +5,8 @@ __pycache__/
 terraform.tfvars
 *.tfstate
 *.tfstate.*
+tfplan
+*.tfplan
 crash.log
 override.tf
 override.tf.json

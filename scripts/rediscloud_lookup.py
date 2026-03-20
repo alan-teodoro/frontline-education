@@ -115,6 +115,11 @@ def main() -> None:
     parser.add_argument("--subscription-name", required=True)
     parser.add_argument("--database-name")
     parser.add_argument("--api-base", default=API_BASE_DEFAULT)
+    parser.add_argument(
+        "--retry-database-endpoint",
+        action="store_true",
+        help="Retry temporary 404/transport errors when the Redis Cloud database endpoint is not ready yet.",
+    )
     args = parser.parse_args()
 
     access_key = os.getenv("REDISCLOUD_ACCESS_KEY")
@@ -164,7 +169,7 @@ def main() -> None:
                 )
                 break
             except HTTPError as exc:
-                if exc.code == 404 and attempt < DATABASE_LOOKUP_RETRIES:
+                if exc.code == 404 and args.retry_database_endpoint and attempt < DATABASE_LOOKUP_RETRIES:
                     print(
                         "Redis Cloud database endpoint is not ready yet for "
                         f"subscription {subscription['id']}. Retrying in "
@@ -186,7 +191,7 @@ def main() -> None:
                 )
                 sys.exit(1)
             except URLError as exc:
-                if attempt < DATABASE_LOOKUP_RETRIES:
+                if args.retry_database_endpoint and attempt < DATABASE_LOOKUP_RETRIES:
                     print(
                         "Redis Cloud database lookup failed temporarily for "
                         f"subscription {subscription['id']}: {exc}. Retrying in "
