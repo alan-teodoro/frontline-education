@@ -17,7 +17,12 @@ terraform {
 locals {
   role_name = element(reverse(split("/", var.application_role_arn)), 0)
 
-  acl_user_password = coalesce(var.acl_user_password_override, try(random_password.acl_user[0].result, null))
+  generated_acl_user_password = try(
+    "${random_string.acl_user_upper[0].result}${random_string.acl_user_lower[0].result}${random_string.acl_user_numeric[0].result}!${random_string.acl_user_mixed[0].result}",
+    null
+  )
+
+  acl_user_password = coalesce(var.acl_user_password_override, local.generated_acl_user_password)
 
   preferred_endpoint = try(compact([
     var.database_private_endpoint,
@@ -37,14 +42,44 @@ locals {
   })
 }
 
-resource "random_password" "acl_user" {
+resource "random_string" "acl_user_upper" {
   count = var.acl_user_password_override == null ? 1 : 0
 
-  length      = 32
-  special     = false
-  min_upper   = 1
-  min_lower   = 1
-  min_numeric = 1
+  length  = 4
+  upper   = true
+  lower   = false
+  numeric = false
+  special = false
+}
+
+resource "random_string" "acl_user_lower" {
+  count = var.acl_user_password_override == null ? 1 : 0
+
+  length  = 6
+  upper   = false
+  lower   = true
+  numeric = false
+  special = false
+}
+
+resource "random_string" "acl_user_numeric" {
+  count = var.acl_user_password_override == null ? 1 : 0
+
+  length  = 4
+  upper   = false
+  lower   = false
+  numeric = true
+  special = false
+}
+
+resource "random_string" "acl_user_mixed" {
+  count = var.acl_user_password_override == null ? 1 : 0
+
+  length  = 12
+  upper   = true
+  lower   = true
+  numeric = true
+  special = false
 }
 
 resource "rediscloud_acl_rule" "this" {
