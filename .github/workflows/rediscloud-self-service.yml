@@ -256,8 +256,8 @@ jobs:
             --environment "${{ inputs.environment }}" \
             --subscription-family "${{ inputs.subscription_family }}" \
             --subscription-name-override "${{ inputs.subscription_name_override }}" \
-            --payment-method "${{ vars.REDISCLOUD_PAYMENT_METHOD }}" \
-            --payment-method-id "${{ secrets.REDISCLOUD_PAYMENT_METHOD_ID }}"
+            --payment-method "credit-card" \
+            --payment-method-id "${{ vars.REDISCLOUD_PAYMENT_METHOD_ID }}"
 
       - name: Terraform init
         working-directory: stacks/subscription
@@ -445,8 +445,8 @@ jobs:
             --environment "${{ inputs.environment }}" \
             --subscription-family "${{ inputs.subscription_family }}" \
             --subscription-name-override "${{ inputs.subscription_name_override }}" \
-            --payment-method "${{ vars.REDISCLOUD_PAYMENT_METHOD }}" \
-            --payment-method-id "${{ secrets.REDISCLOUD_PAYMENT_METHOD_ID }}"
+            --payment-method "credit-card" \
+            --payment-method-id "${{ vars.REDISCLOUD_PAYMENT_METHOD_ID }}"
 
           python3 scripts/write_tfvars.py \
             --stack database \
@@ -586,8 +586,8 @@ jobs:
             --environment "${{ inputs.environment }}" \
             --subscription-family "${{ inputs.subscription_family }}" \
             --subscription-name-override "${{ inputs.subscription_name_override }}" \
-            --payment-method "${{ vars.REDISCLOUD_PAYMENT_METHOD }}" \
-            --payment-method-id "${{ secrets.REDISCLOUD_PAYMENT_METHOD_ID }}"
+            --payment-method "credit-card" \
+            --payment-method-id "${{ vars.REDISCLOUD_PAYMENT_METHOD_ID }}"
 
       - name: Destroy database stack when present
         working-directory: stacks/database

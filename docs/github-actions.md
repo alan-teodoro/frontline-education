@@ -13,7 +13,6 @@ This repository now includes:
 - `REDISCLOUD_SECRET_KEY`: Redis Cloud user API key.
 - `TF_STATE_BUCKET`: S3 bucket used as the Terraform remote backend.
 - `TF_STATE_REGION`: AWS region for the Terraform state bucket.
-- `REDISCLOUD_PAYMENT_METHOD_ID`: only required when `REDISCLOUD_PAYMENT_METHOD=credit-card`.
 
 Mapping reminder:
 
@@ -22,13 +21,15 @@ Mapping reminder:
 
 ## Required GitHub repository variables
 
-- `REDISCLOUD_PAYMENT_METHOD`: one of `marketplace` or `credit-card`, when Frontline needs to pin the subscription payment model explicitly.
+- `REDISCLOUD_PAYMENT_METHOD_ID`: Redis Cloud payment method identifier for the credit card configured on the account.
 - `AWS_GITHUB_ACTIONS_ROLE_ARN_DEV`
 - `AWS_GITHUB_ACTIONS_ROLE_ARN_QA`
 - `AWS_GITHUB_ACTIONS_ROLE_ARN_STAGE`
 - `AWS_GITHUB_ACTIONS_ROLE_ARN_PROD`
 
 These role ARNs are used by `aws-actions/configure-aws-credentials` with GitHub OIDC.
+
+The self-service workflow is currently fixed to `payment_method=credit-card`.
 
 ## Recommended GitHub environments
 
