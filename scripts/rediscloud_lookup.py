@@ -175,6 +175,10 @@ def main() -> None:
                     time.sleep(DATABASE_LOOKUP_RETRY_DELAY_SECONDS)
                     continue
 
+                if exc.code == 404:
+                    databases_payload = []
+                    break
+
                 print(
                     "Failed to query Redis Cloud databases for "
                     f"subscription {subscription['id']}: {describe_http_error(exc)}",
