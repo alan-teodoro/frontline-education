@@ -132,6 +132,12 @@ variable "secret_name_override" {
   default     = null
 }
 
+variable "acl_user_password_override" {
+  description = "Optional explicit ACL user password override, intended mainly for controlled testing."
+  type        = string
+  default     = null
+}
+
 variable "acl_rule_string_override" {
   description = "Optional explicit ACL rule string."
   type        = string

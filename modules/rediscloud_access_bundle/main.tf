@@ -19,6 +19,8 @@ locals {
     for arn in var.application_role_arns : element(reverse(split("/", arn)), 0)
   ])
 
+  acl_user_password = coalesce(var.acl_user_password_override, try(random_password.acl_user[0].result, null))
+
   preferred_endpoint = try(compact([
     var.database_private_endpoint,
     var.database_public_endpoint
@@ -32,15 +34,19 @@ locals {
     private_endpoint = var.database_private_endpoint
     public_endpoint  = var.database_public_endpoint
     username         = rediscloud_acl_user.this.name
-    password         = random_password.acl_user.result
+    password         = local.acl_user_password
     tls_enabled      = true
   })
 }
 
 resource "random_password" "acl_user" {
-  length           = 32
-  special          = true
-  override_special = "!@#$%^&*()-_=+[]{}<>:?"
+  count = var.acl_user_password_override == null ? 1 : 0
+
+  length      = 32
+  special     = false
+  min_upper   = 1
+  min_lower   = 1
+  min_numeric = 1
 }
 
 resource "rediscloud_acl_rule" "this" {
@@ -64,7 +70,7 @@ resource "rediscloud_acl_role" "this" {
 resource "rediscloud_acl_user" "this" {
   name     = var.acl_user_name
   role     = rediscloud_acl_role.this.name
-  password = random_password.acl_user.result
+  password = local.acl_user_password
 }
 
 resource "aws_secretsmanager_secret" "this" {

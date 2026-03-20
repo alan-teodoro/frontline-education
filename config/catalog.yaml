@@ -1,6 +1,6 @@
 defaults:
   redis_version: "8.2"
-  public_endpoint_access: false
+  public_endpoint_access: true
   enable_tls: true
   enable_default_user: false
   auto_minor_version_upgrade: true

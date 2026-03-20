@@ -4,7 +4,8 @@
 
 This repository now includes:
 
-- [`rediscloud-self-service.yml`](/Users/alan/workspaces/alan-teodoro/frontline-education/.github/workflows/rediscloud-self-service.yml): request-driven create, update, import, and destroy workflow.
+- [`rediscloud-apply.yml`](/Users/alan/workspaces/alan-teodoro/frontline-education/.github/workflows/rediscloud-apply.yml): request-driven create and update workflow.
+- [`rediscloud-destroy.yml`](/Users/alan/workspaces/alan-teodoro/frontline-education/.github/workflows/rediscloud-destroy.yml): request-driven destroy workflow.
 - [`terraform-validate.yml`](/Users/alan/workspaces/alan-teodoro/frontline-education/.github/workflows/terraform-validate.yml): pull request and push validation workflow.
 
 ## Required GitHub repository secrets
@@ -62,7 +63,7 @@ Recommended protection settings:
 - `destroy-stage`: require reviewers.
 - `destroy-prod`: require reviewers.
 
-The self-service workflow uses:
+The workflows use:
 
 - `environment: <target-environment>` on apply jobs
 - `environment: destroy-<target-environment>` on destroy jobs
@@ -85,7 +86,7 @@ Examples:
 
 ## Workflow behaviour
 
-### Apply flow
+### Apply workflow
 
 1. Resolve names and backend keys from the request.
 2. Discover whether the subscription already exists in Redis Cloud.
@@ -97,7 +98,7 @@ Examples:
 8. Apply the database stack.
 9. Publish the secret name and ARN in the workflow summary.
 
-### Destroy flow
+### Destroy workflow
 
 1. Resolve names and backend keys from the request.
 2. Discover whether the database and subscription exist.

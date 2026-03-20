@@ -1,0 +1,338 @@
+name: Redis Cloud Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - stage
+          - prod
+      subscription_family:
+        description: Subscription family or platform slice
+        required: true
+        type: string
+      app_name:
+        description: Application name
+        required: true
+        type: string
+      purpose:
+        description: Database purpose such as session, cache, or reporting
+        required: true
+        type: string
+      tier:
+        description: T-shirt size
+        required: true
+        type: choice
+        options:
+          - s
+          - m
+          - l
+          - xl
+      persistence_mode:
+        description: Persistence mode
+        required: true
+        type: choice
+        options:
+          - none
+          - aof-every-1-second
+          - aof-every-write
+          - snapshot-every-1-hour
+          - snapshot-every-6-hours
+          - snapshot-every-12-hours
+        default: snapshot-every-6-hours
+      data_eviction:
+        description: Data eviction policy
+        required: true
+        type: choice
+        options:
+          - allkeys-lru
+          - allkeys-lfu
+          - allkeys-random
+          - volatile-lru
+          - volatile-lfu
+          - volatile-random
+          - volatile-ttl
+          - noeviction
+        default: allkeys-lru
+      application_role_arns:
+        description: JSON array or comma-separated list of AWS IAM role ARNs that can read the secret
+        required: true
+        type: string
+      service_account_purpose:
+        description: Service account purpose
+        required: true
+        type: choice
+        options:
+          - app
+          - pipeline
+          - readonly
+          - ops
+        default: app
+      access_level:
+        description: Access level
+        required: true
+        type: choice
+        options:
+          - readwrite
+          - readonly
+          - ops
+        default: readwrite
+      temporary:
+        description: Whether the database is temporary
+        required: true
+        type: boolean
+        default: false
+      expiration_date:
+        description: Expiration date in YYYY-MM-DD format when temporary is true
+        required: false
+        type: string
+      destroy_subscription_if_empty:
+        description: When destroying, also destroy the subscription if it becomes empty
+        required: true
+        type: boolean
+        default: false
+      subscription_name_override:
+        description: Optional explicit subscription name
+        required: false
+        type: string
+      database_name_override:
+        description: Optional explicit database name
+        required: false
+        type: string
+      secret_name_override:
+        description: Optional explicit secret name
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: rediscloud-${{ inputs.environment }}-${{ inputs.subscription_family }}-${{ inputs.app_name }}-${{ inputs.purpose }}-destroy
+  cancel-in-progress: false
+
+env:
+  REDISCLOUD_API_BASE: https://api.redislabs.com/v1
+
+jobs:
+  resolve_request:
+    runs-on: ubuntu-latest
+    outputs:
+      subscription_name: ${{ steps.resolve.outputs.subscription_name }}
+      database_name: ${{ steps.resolve.outputs.database_name }}
+      acl_rule_name: ${{ steps.resolve.outputs.acl_rule_name }}
+      acl_role_name: ${{ steps.resolve.outputs.acl_role_name }}
+      acl_user_name: ${{ steps.resolve.outputs.acl_user_name }}
+      secret_name: ${{ steps.resolve.outputs.secret_name }}
+      subscription_state_key: ${{ steps.resolve.outputs.subscription_state_key }}
+      database_state_key: ${{ steps.resolve.outputs.database_state_key }}
+      github_environment: ${{ steps.resolve.outputs.github_environment }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Python dependencies
+        run: python3 -m pip install -r scripts/requirements.txt
+
+      - name: Resolve request context
+        id: resolve
+        run: |
+          python3 scripts/resolve_request.py \
+            --operation "destroy" \
+            --environment "${{ inputs.environment }}" \
+            --subscription-family "${{ inputs.subscription_family }}" \
+            --app-name "${{ inputs.app_name }}" \
+            --purpose "${{ inputs.purpose }}" \
+            --tier "${{ inputs.tier }}" \
+            --persistence-mode "${{ inputs.persistence_mode }}" \
+            --data-eviction "${{ inputs.data_eviction }}" \
+            --application-role-arns '${{ inputs.application_role_arns }}' \
+            --temporary "${{ inputs.temporary }}" \
+            --expiration-date "${{ inputs.expiration_date }}" \
+            --service-account-purpose "${{ inputs.service_account_purpose }}" \
+            --access-level "${{ inputs.access_level }}" \
+            --subscription-name-override "${{ inputs.subscription_name_override }}" \
+            --database-name-override "${{ inputs.database_name_override }}" \
+            --secret-name-override "${{ inputs.secret_name_override }}"
+
+      - name: Write request summary
+        run: |
+          {
+            echo "## Request summary"
+            echo
+            echo "- Operation: `destroy`"
+            echo "- Environment: \`${{ inputs.environment }}\`"
+            echo "- Subscription family: \`${{ inputs.subscription_family }}\`"
+            echo "- Subscription name: \`${{ steps.resolve.outputs.subscription_name }}\`"
+            echo "- Database name: \`${{ steps.resolve.outputs.database_name }}\`"
+            echo "- Secret name: \`${{ steps.resolve.outputs.secret_name }}\`"
+            echo "- Subscription state key: \`${{ steps.resolve.outputs.subscription_state_key }}\`"
+            echo "- Database state key: \`${{ steps.resolve.outputs.database_state_key }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  discovery:
+    runs-on: ubuntu-latest
+    needs:
+      - resolve_request
+    env:
+      REDISCLOUD_ACCESS_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_ACCESS_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_ACCESS_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_ACCESS_KEY_STAGE || secrets.REDISCLOUD_ACCESS_KEY_PROD }}
+      REDISCLOUD_SECRET_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_SECRET_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_SECRET_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_SECRET_KEY_STAGE || secrets.REDISCLOUD_SECRET_KEY_PROD }}
+    outputs:
+      subscription_exists: ${{ steps.lookup.outputs.subscription_exists }}
+      subscription_id: ${{ steps.lookup.outputs.subscription_id }}
+      database_exists: ${{ steps.lookup.outputs.database_exists }}
+      database_id: ${{ steps.lookup.outputs.database_id }}
+      subscription_database_count: ${{ steps.lookup.outputs.subscription_database_count }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Lookup existing Redis Cloud resources
+        id: lookup
+        run: |
+          python3 scripts/rediscloud_lookup.py \
+            --subscription-name "${{ needs.resolve_request.outputs.subscription_name }}" \
+            --database-name "${{ needs.resolve_request.outputs.database_name }}" \
+            --api-base "$REDISCLOUD_API_BASE"
+
+      - name: Write discovery summary
+        run: |
+          {
+            echo "## Discovery summary"
+            echo
+            echo "- Subscription exists: \`${{ steps.lookup.outputs.subscription_exists }}\`"
+            echo "- Subscription ID: \`${{ steps.lookup.outputs.subscription_id || 'n/a' }}\`"
+            echo "- Database exists: \`${{ steps.lookup.outputs.database_exists }}\`"
+            echo "- Database ID: \`${{ steps.lookup.outputs.database_id || 'n/a' }}\`"
+            echo "- Current database count in subscription: \`${{ steps.lookup.outputs.subscription_database_count }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  destroy:
+    runs-on: ubuntu-latest
+    needs:
+      - resolve_request
+      - discovery
+    environment: destroy-${{ needs.resolve_request.outputs.github_environment }}
+    env:
+      AWS_ROLE_TO_ASSUME: ${{ inputs.environment == 'dev' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_DEV || inputs.environment == 'qa' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_QA || inputs.environment == 'stage' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_STAGE || vars.AWS_GITHUB_ACTIONS_ROLE_ARN_PROD }}
+      TF_IN_AUTOMATION: "true"
+      REDISCLOUD_ACCESS_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_ACCESS_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_ACCESS_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_ACCESS_KEY_STAGE || secrets.REDISCLOUD_ACCESS_KEY_PROD }}
+      REDISCLOUD_SECRET_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_SECRET_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_SECRET_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_SECRET_KEY_STAGE || secrets.REDISCLOUD_SECRET_KEY_PROD }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.TF_STATE_REGION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Write stack tfvars
+        run: |
+          python3 scripts/write_tfvars.py \
+            --stack database \
+            --output stacks/database/request.auto.tfvars.json \
+            --environment "${{ inputs.environment }}" \
+            --subscription-family "${{ inputs.subscription_family }}" \
+            --subscription-name-override "${{ inputs.subscription_name_override }}" \
+            --app-name "${{ inputs.app_name }}" \
+            --purpose "${{ inputs.purpose }}" \
+            --tier "${{ inputs.tier }}" \
+            --persistence-mode "${{ inputs.persistence_mode }}" \
+            --data-eviction "${{ inputs.data_eviction }}" \
+            --application-role-arns '${{ inputs.application_role_arns }}' \
+            --temporary "${{ inputs.temporary }}" \
+            --expiration-date "${{ inputs.expiration_date }}" \
+            --service-account-purpose "${{ inputs.service_account_purpose }}" \
+            --access-level "${{ inputs.access_level }}" \
+            --database-name-override "${{ inputs.database_name_override }}" \
+            --secret-name-override "${{ inputs.secret_name_override }}"
+
+          python3 scripts/write_tfvars.py \
+            --stack subscription \
+            --output stacks/subscription/request.auto.tfvars.json \
+            --environment "${{ inputs.environment }}" \
+            --subscription-family "${{ inputs.subscription_family }}" \
+            --subscription-name-override "${{ inputs.subscription_name_override }}"
+
+      - name: Write temporary backend config
+        run: |
+          cat > stacks/subscription/backend.generated.tf <<'EOF'
+          terraform {
+            backend "s3" {
+              use_lockfile = true
+            }
+          }
+          EOF
+
+          cat > stacks/database/backend.generated.tf <<'EOF'
+          terraform {
+            backend "s3" {
+              use_lockfile = true
+            }
+          }
+          EOF
+
+      - name: Destroy database stack when present
+        working-directory: stacks/database
+        run: |
+          terraform init -reconfigure \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="region=${{ secrets.TF_STATE_REGION }}" \
+            -backend-config="key=${{ needs.resolve_request.outputs.database_state_key }}"
+
+          if [ "${{ needs.discovery.outputs.database_exists }}" = "true" ] && ! terraform state show module.database.rediscloud_subscription_database.this >/dev/null 2>&1; then
+            terraform import module.database.rediscloud_subscription_database.this "${{ needs.discovery.outputs.subscription_id }}/${{ needs.discovery.outputs.database_id }}"
+          fi
+
+          if terraform state show module.database.rediscloud_subscription_database.this >/dev/null 2>&1; then
+            terraform destroy -input=false -auto-approve
+          else
+            echo "No managed database resource found in Terraform state. Skipping database destroy."
+          fi
+
+      - name: Refresh discovery after database destroy
+        id: refresh_lookup
+        if: ${{ inputs.destroy_subscription_if_empty }}
+        run: |
+          python3 scripts/rediscloud_lookup.py \
+            --subscription-name "${{ needs.resolve_request.outputs.subscription_name }}" \
+            --api-base "$REDISCLOUD_API_BASE"
+
+      - name: Destroy subscription when empty
+        if: ${{ inputs.destroy_subscription_if_empty && steps.refresh_lookup.outputs.subscription_exists == 'true' && steps.refresh_lookup.outputs.subscription_database_count == '0' }}
+        working-directory: stacks/subscription
+        run: |
+          terraform init -reconfigure \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="region=${{ secrets.TF_STATE_REGION }}" \
+            -backend-config="key=${{ needs.resolve_request.outputs.subscription_state_key }}"
+
+          if ! terraform state show module.subscription.rediscloud_subscription.this >/dev/null 2>&1; then
+            terraform import module.subscription.rediscloud_subscription.this "${{ steps.refresh_lookup.outputs.subscription_id }}"
+          fi
+
+          terraform destroy -input=false -auto-approve
+
+      - name: Write destroy summary
+        run: |
+          {
+            echo "## Destroy summary"
+            echo
+            echo "- Database request processed for: \`${{ needs.resolve_request.outputs.database_name }}\`"
+            echo "- Subscription destroy requested: \`${{ inputs.destroy_subscription_if_empty }}\`"
+            echo "- Subscription destroy executed: \`${{ inputs.destroy_subscription_if_empty && steps.refresh_lookup.outputs.subscription_exists == 'true' && steps.refresh_lookup.outputs.subscription_database_count == '0' }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"

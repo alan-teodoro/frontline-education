@@ -55,6 +55,7 @@ module "access_bundle" {
   acl_rule_name                  = module.naming.acl_rule_name
   acl_role_name                  = module.naming.acl_role_name
   acl_user_name                  = module.naming.acl_user_name
+  acl_user_password_override     = var.acl_user_password_override
   acl_rule_string                = coalesce(var.acl_rule_string_override, lookup(local.acl_rule_catalog, var.access_level, local.acl_rule_catalog.readwrite))
   secret_name                    = coalesce(var.secret_name_override, module.naming.secret_name)
   application_role_arns          = var.application_role_arns

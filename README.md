@@ -11,7 +11,7 @@ The repository now includes both local Terraform stacks and GitHub Actions workf
 - Generate application credentials without exposing them in Terraform outputs.
 - Store database connection details in AWS Secrets Manager.
 - Grant read access to the generated secret to one or more AWS IAM application roles.
-- Support GitHub Actions self-service apply and destroy flows with discovery and import.
+- Support separate GitHub Actions apply and destroy flows with discovery and import.
 - Support environment-specific Redis Cloud credentials so each environment can target a different Redis Cloud account.
 - Support Terraform validation in CI.
 
@@ -48,7 +48,8 @@ This separation matters for day-2 operations:
 - `scripts`: helper utilities used by GitHub Actions to resolve names, look up Redis Cloud resources, and generate tfvars files.
 - `stacks/subscription`: root stack for a subscription.
 - `stacks/database`: root stack for a database request.
-- `.github/workflows/rediscloud-self-service.yml`: request-driven GitHub Actions workflow.
+- `.github/workflows/rediscloud-apply.yml`: request-driven apply workflow.
+- `.github/workflows/rediscloud-destroy.yml`: request-driven destroy workflow.
 - `.github/workflows/terraform-validate.yml`: CI validation workflow.
 
 ## Important design decision for subscriptions

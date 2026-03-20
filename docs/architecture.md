@@ -111,7 +111,10 @@ If temporary databases are allowed for the same app and purpose, append the expi
 
 ## Implemented workflow behaviour
 
-The self-service workflow is [`rediscloud-self-service.yml`](/Users/alan/workspaces/alan-teodoro/frontline-education/.github/workflows/rediscloud-self-service.yml).
+The repository now uses two request-driven workflows:
+
+- [`rediscloud-apply.yml`](/Users/alan/workspaces/alan-teodoro/frontline-education/.github/workflows/rediscloud-apply.yml)
+- [`rediscloud-destroy.yml`](/Users/alan/workspaces/alan-teodoro/frontline-education/.github/workflows/rediscloud-destroy.yml)
 
 The workflow selects Redis Cloud credentials by environment. This is important because the customer may use a different Redis Cloud account for `dev`, `qa`, `stage`, and `prod`, even if the Terraform structure and naming rules stay the same.
 
