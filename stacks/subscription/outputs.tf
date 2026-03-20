@@ -10,11 +10,15 @@ output "subscription_name" {
 
 output "cloud_account_name" {
   description = "Resolved Redis Cloud cloud account name."
-  value       = local.environment_settings.cloud_account_name
+  value       = local.deployment_model == "byoc" ? local.cloud_account_name : null
+}
+
+output "deployment_model" {
+  description = "Resolved subscription deployment model."
+  value       = local.deployment_model
 }
 
 output "region" {
   description = "Resolved AWS region."
   value       = local.environment_settings.region
 }
-

@@ -40,6 +40,19 @@ python3 scripts/rediscloud_lookup.py --subscription-name does-not-need-to-exist
 
 If authentication is working, the script should return a JSON payload rather than an authentication error.
 
+## Local BYOC override for personal testing
+
+The repository default is `managed`, which matches the customer target design.
+
+For local BYOC-only tests, add these overrides to a local tfvars file for [`stacks/subscription`](/Users/alan/workspaces/alan-teodoro/frontline-education/stacks/subscription):
+
+```hcl
+deployment_model         = "byoc"
+cloud_account_name_override = "AWS Professional Services"
+```
+
+The `AWS Professional Services` cloud account name was discovered from the current test Redis Cloud account through the Redis Cloud API. Do not keep that override in the customer baseline unless they actually plan to use BYOC.
+
 ## Configure GitHub repository secrets with the same credentials
 
 If the target repository is already configured in GitHub CLI:

@@ -27,6 +27,8 @@ The subscription stack owns:
 
 It does not own any databases.
 
+The stack supports both `managed` and `byoc` deployment models. The repository baseline is `managed` for the customer, while BYOC can be enabled through explicit overrides for local testing.
+
 ### Database stack ownership
 
 The database stack owns:

@@ -25,6 +25,23 @@ variable "subscription_name_override" {
   default     = null
 }
 
+variable "deployment_model" {
+  description = "Subscription deployment model: managed or byoc."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.deployment_model == null || contains(["managed", "byoc"], var.deployment_model)
+    error_message = "deployment_model must be null, managed, or byoc."
+  }
+}
+
+variable "cloud_account_name_override" {
+  description = "Optional Redis Cloud BYOC cloud account name override."
+  type        = string
+  default     = null
+}
+
 variable "payment_method" {
   description = "Optional payment method such as marketplace or credit-card."
   type        = string

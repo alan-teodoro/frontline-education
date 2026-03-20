@@ -40,8 +40,9 @@ variable "memory_storage" {
 }
 
 variable "cloud_account_id" {
-  description = "Redis Cloud account identifier for the AWS account."
+  description = "Redis Cloud account identifier for the AWS account when using BYOC."
   type        = string
+  default     = null
 }
 
 variable "region" {

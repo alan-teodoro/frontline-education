@@ -44,6 +44,8 @@ def main() -> None:
     parser.add_argument("--environment", required=True)
     parser.add_argument("--subscription-family", required=True)
     parser.add_argument("--subscription-name-override")
+    parser.add_argument("--deployment-model")
+    parser.add_argument("--cloud-account-name-override")
     parser.add_argument("--payment-method")
     parser.add_argument("--payment-method-id")
     parser.add_argument("--app-name")
@@ -66,6 +68,8 @@ def main() -> None:
                 "environment": args.environment,
                 "subscription_family": args.subscription_family,
                 "subscription_name_override": blank_to_none(args.subscription_name_override),
+                "deployment_model": blank_to_none(args.deployment_model),
+                "cloud_account_name_override": blank_to_none(args.cloud_account_name_override),
                 "payment_method": blank_to_none(args.payment_method),
                 "payment_method_id": blank_to_none(args.payment_method_id),
             }

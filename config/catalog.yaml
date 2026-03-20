@@ -34,6 +34,9 @@ billing:
   credit_card_type: Mastercard
   credit_card_last_four: "1006"
 
+subscription_settings:
+  deployment_model: managed
+
 environments:
   dev:
     aws_region: us-east-1

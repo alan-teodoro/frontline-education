@@ -78,5 +78,10 @@ resource "rediscloud_subscription" "this" {
       )
       error_message = "When payment_method is credit-card, provide payment_method_id or both payment_card_type and payment_card_last_four."
     }
+
+    precondition {
+      condition     = var.cloud_account_id == null || var.cloud_account_id != ""
+      error_message = "cloud_account_id must be null or a valid Redis Cloud BYOC account id."
+    }
   }
 }

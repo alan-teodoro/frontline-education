@@ -1,7 +1,9 @@
 data "rediscloud_cloud_account" "target" {
+  count = local.deployment_model == "byoc" ? 1 : 0
+
   exclude_internal_account = true
   provider_type            = "AWS"
-  name                     = local.environment_settings.cloud_account_name
+  name                     = local.cloud_account_name
 }
 
 module "naming" {
@@ -21,7 +23,7 @@ module "subscription" {
   payment_card_last_four       = coalesce(var.payment_card_last_four, try(local.billing_settings.credit_card_last_four, null))
   public_endpoint_access       = try(local.defaults.public_endpoint_access, false)
   memory_storage               = try(local.profile.memory_storage, "ram")
-  cloud_account_id             = data.rediscloud_cloud_account.target.id
+  cloud_account_id             = local.deployment_model == "byoc" ? data.rediscloud_cloud_account.target[0].id : null
   region                       = local.environment_settings.region
   networking_deployment_cidr   = local.environment_settings.networking_deployment_cidr
   multiple_availability_zones  = try(local.environment_settings.multiple_availability_zones, false)

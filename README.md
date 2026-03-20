@@ -97,6 +97,8 @@ The implemented GitHub Actions model is documented in [`docs/architecture.md`](/
 
 The repository is also prepared for local Redis Cloud API testing through the Git-ignored file [`.env.rediscloud.test.local`](/Users/alan/workspaces/alan-teodoro/frontline-education/.env.rediscloud.test.local). The local test flow is documented in [`docs/local-testing.md`](/Users/alan/workspaces/alan-teodoro/frontline-education/docs/local-testing.md).
 
+The default subscription deployment model in the repository is `managed`, which matches the expected Frontline rollout. For local Redis Cloud BYOC tests, use explicit Terraform overrides instead of changing the customer default.
+
 ## Security notes
 
 - Database credentials are not exposed in Terraform outputs.

@@ -7,3 +7,7 @@ subscription_family = "student-solutions"
 # payment_card_type = "Mastercard"
 # payment_card_last_four = "1006"
 # payment_method_id = "42077"
+
+# Client default is managed. For local BYOC testing only:
+# deployment_model = "byoc"
+# cloud_account_name_override = "AWS Professional Services"
