@@ -17,6 +17,7 @@ locals {
         subscription_family = var.subscription_family
         app                 = var.app_name
         purpose             = var.purpose
+        use_case            = var.purpose
         tier                = var.tier
       }
     ) : lower(key) => lower(tostring(value))
@@ -30,6 +31,7 @@ locals {
       subscription_family = var.subscription_family
       app                 = var.app_name
       purpose             = var.purpose
+      use_case            = var.purpose
     }
   )
 }
