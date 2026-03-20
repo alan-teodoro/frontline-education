@@ -1,6 +1,7 @@
 locals {
   catalog              = yamldecode(file(var.catalog_file))
   defaults             = try(local.catalog.defaults, {})
+  billing_settings     = try(local.catalog.billing, {})
   environment_settings = try(local.catalog.environments[var.environment], {})
   profile              = try(local.catalog.subscription_profiles[var.subscription_family], {})
   size_key             = lower(coalesce(var.max_tier_override, try(local.profile.max_tier, null)))

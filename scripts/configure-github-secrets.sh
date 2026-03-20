@@ -34,7 +34,6 @@ echo
 echo "Still needed before workflow execution:"
 echo "- TF_STATE_BUCKET"
 echo "- TF_STATE_REGION"
-echo "- Repository variable: REDISCLOUD_PAYMENT_METHOD_ID"
 echo "- Repository variables: AWS_GITHUB_ACTIONS_ROLE_ARN_DEV/QA/STAGE/PROD"
 echo
-echo "The workflow already uses payment_method=credit-card."
+echo "The workflow resolves credit-card billing from config/catalog.yaml."

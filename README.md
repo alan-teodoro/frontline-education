@@ -58,7 +58,7 @@ For that reason, subscription sizing is driven by `subscription_profiles` in [`c
 
 ## Local usage
 
-1. Update [`config/catalog.yaml`](/Users/alan/workspaces/alan-teodoro/frontline-education/config/catalog.yaml) with the correct Redis Cloud cloud account names, AWS regions, CIDR ranges, and subscription profile values for Frontline Education.
+1. Update [`config/catalog.yaml`](/Users/alan/workspaces/alan-teodoro/frontline-education/config/catalog.yaml) with the correct Redis Cloud cloud account names, AWS regions, CIDR ranges, billing settings, and subscription profile values for Frontline Education.
 2. Export Redis Cloud API credentials:
 
 ```bash

@@ -15,8 +15,10 @@ module "subscription" {
   source = "../../modules/rediscloud_subscription"
 
   name                         = coalesce(var.subscription_name_override, module.naming.subscription_name)
-  payment_method               = var.payment_method
+  payment_method               = coalesce(var.payment_method, try(local.billing_settings.payment_method, null))
   payment_method_id            = var.payment_method_id
+  payment_card_type            = coalesce(var.payment_card_type, try(local.billing_settings.credit_card_type, null))
+  payment_card_last_four       = coalesce(var.payment_card_last_four, try(local.billing_settings.credit_card_last_four, null))
   public_endpoint_access       = try(local.defaults.public_endpoint_access, false)
   memory_storage               = try(local.profile.memory_storage, "ram")
   cloud_account_id             = data.rediscloud_cloud_account.target.id

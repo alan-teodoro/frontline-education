@@ -15,6 +15,18 @@ variable "payment_method_id" {
   default     = null
 }
 
+variable "payment_card_type" {
+  description = "Credit card type when resolving the payment method automatically."
+  type        = string
+  default     = null
+}
+
+variable "payment_card_last_four" {
+  description = "Last four digits of the credit card when resolving the payment method automatically."
+  type        = string
+  default     = null
+}
+
 variable "public_endpoint_access" {
   description = "Whether public endpoint access is enabled."
   type        = bool
@@ -115,4 +127,3 @@ variable "allowlist_security_group_ids" {
   type        = list(string)
   default     = []
 }
-

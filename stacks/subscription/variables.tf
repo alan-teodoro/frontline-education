@@ -42,6 +42,23 @@ variable "payment_method_id" {
   default     = null
 }
 
+variable "payment_card_type" {
+  description = "Optional credit card type used to look up the payment method automatically."
+  type        = string
+  default     = null
+}
+
+variable "payment_card_last_four" {
+  description = "Optional last four digits used to look up the payment method automatically."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.payment_card_last_four == null || can(regex("^\\d{4}$", var.payment_card_last_four))
+    error_message = "payment_card_last_four must contain exactly 4 digits."
+  }
+}
+
 variable "max_tier_override" {
   description = "Optional override for the largest expected database tier in the subscription."
   type        = string
@@ -53,4 +70,3 @@ variable "planned_database_quantity_override" {
   type        = number
   default     = null
 }
-

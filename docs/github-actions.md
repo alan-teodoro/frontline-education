@@ -21,7 +21,6 @@ Mapping reminder:
 
 ## Required GitHub repository variables
 
-- `REDISCLOUD_PAYMENT_METHOD_ID`: Redis Cloud payment method identifier for the credit card configured on the account.
 - `AWS_GITHUB_ACTIONS_ROLE_ARN_DEV`
 - `AWS_GITHUB_ACTIONS_ROLE_ARN_QA`
 - `AWS_GITHUB_ACTIONS_ROLE_ARN_STAGE`
@@ -29,7 +28,7 @@ Mapping reminder:
 
 These role ARNs are used by `aws-actions/configure-aws-credentials` with GitHub OIDC.
 
-The self-service workflow is currently fixed to `payment_method=credit-card`.
+Billing is resolved from [`config/catalog.yaml`](/Users/alan/workspaces/alan-teodoro/frontline-education/config/catalog.yaml). For the current test setup, the workflow uses `payment_method=credit-card` and looks up the configured card automatically by `credit_card_type` and `credit_card_last_four`.
 
 ## Recommended GitHub environments
 

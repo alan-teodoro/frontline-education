@@ -6,10 +6,23 @@ terraform {
   }
 }
 
+locals {
+  use_marketplace         = var.payment_method == "marketplace"
+  use_credit_card         = var.payment_method == "credit-card"
+  resolved_payment_method = local.use_credit_card ? coalesce(var.payment_method_id, try(data.rediscloud_payment_method.card[0].id, null)) : null
+}
+
+data "rediscloud_payment_method" "card" {
+  count = local.use_credit_card && var.payment_method_id == null ? 1 : 0
+
+  card_type         = var.payment_card_type
+  last_four_numbers = var.payment_card_last_four
+}
+
 resource "rediscloud_subscription" "this" {
   name                   = var.name
-  payment_method         = var.payment_method
-  payment_method_id      = var.payment_method_id
+  payment_method         = local.use_marketplace ? "marketplace" : null
+  payment_method_id      = local.resolved_payment_method
   public_endpoint_access = var.public_endpoint_access
   memory_storage         = var.memory_storage
 
@@ -58,8 +71,12 @@ resource "rediscloud_subscription" "this" {
 
   lifecycle {
     precondition {
-      condition     = !(var.payment_method == "credit-card" && var.payment_method_id == null)
-      error_message = "payment_method_id must be provided when payment_method is credit-card."
+      condition = (
+        !local.use_credit_card ||
+        var.payment_method_id != null ||
+        (var.payment_card_type != null && var.payment_card_last_four != null)
+      )
+      error_message = "When payment_method is credit-card, provide payment_method_id or both payment_card_type and payment_card_last_four."
     }
   }
 }

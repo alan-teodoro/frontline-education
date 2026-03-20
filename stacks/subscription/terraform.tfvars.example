@@ -1,7 +1,9 @@
 environment         = "dev"
 subscription_family = "student-solutions"
 
-# Use one of the following patterns depending on how Frontline pays for Redis Cloud:
-# payment_method = "marketplace"
+# Billing defaults come from config/catalog.yaml.
+# Optional overrides:
 # payment_method = "credit-card"
-# payment_method_id = "123456"
+# payment_card_type = "Mastercard"
+# payment_card_last_four = "1006"
+# payment_method_id = "42077"

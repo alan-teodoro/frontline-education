@@ -29,6 +29,11 @@ secret_settings:
   prefix: frontline-education/redis
   recovery_window_in_days: 0
 
+billing:
+  payment_method: credit-card
+  credit_card_type: Mastercard
+  credit_card_last_four: "1006"
+
 environments:
   dev:
     aws_region: us-east-1
