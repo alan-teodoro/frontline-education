@@ -76,21 +76,18 @@ environments:
 subscription_profiles:
   shared:
     max_tier: xl
-    planned_database_quantity: 25
     memory_storage: ram
     replication: true
     support_oss_cluster_api: false
     modules: []
   student-solutions:
     max_tier: l
-    planned_database_quantity: 20
     memory_storage: ram
     replication: true
     support_oss_cluster_api: false
     modules: []
   business-systems:
     max_tier: l
-    planned_database_quantity: 15
     memory_storage: ram
     replication: true
     support_oss_cluster_api: false

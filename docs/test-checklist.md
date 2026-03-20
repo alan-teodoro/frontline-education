@@ -8,7 +8,7 @@ Use this checklist to validate the Terraform stacks locally before moving to Git
 
 - [ ] Create a new subscription when it does not exist.
 - [ ] Confirm the subscription uses the expected deployment model.
-- [ ] Confirm the subscription `creation_plan.quantity` is correct.
+- [ ] Confirm the subscription `creation_plan.quantity` is `1`.
 - [ ] Confirm the subscription name matches the naming convention.
 - [ ] Confirm the subscription uses the expected Redis Cloud account or BYOC cloud account.
 - [ ] Confirm the subscription profile values from `config/catalog.yaml` are applied as expected.

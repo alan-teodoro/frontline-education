@@ -49,10 +49,11 @@ Redis Cloud Pro subscriptions require a `creation_plan` during provisioning. Tha
 Because of that, this repository uses `subscription_profiles` in [`config/catalog.yaml`](/Users/alan/workspaces/alan-teodoro/frontline-education/config/catalog.yaml) to define:
 
 - the maximum expected t-shirt size for the subscription
-- the planned quantity of databases
 - the base memory storage choice
 
 This keeps shared subscriptions stable and predictable.
+
+To keep the customer-facing behaviour simple, the repository always uses `creation_plan.quantity = 1` when creating a subscription.
 
 ## GitHub Actions orchestration
 

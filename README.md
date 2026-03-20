@@ -62,7 +62,7 @@ The current naming model assumes one Redis Cloud account per environment. Becaus
 
 Redis Cloud subscription `creation_plan` is only meaningful during subscription creation. In practice, that means the first database request should not define the long-term subscription capacity model.
 
-For that reason, subscription sizing is driven by `subscription_profiles` in [`config/catalog.yaml`](/Users/alan/workspaces/alan-teodoro/frontline-education/config/catalog.yaml), not by an individual database request. This keeps the first ticket from accidentally undersizing a shared subscription.
+For that reason, subscription sizing is driven by `subscription_profiles` in [`config/catalog.yaml`](/Users/alan/workspaces/alan-teodoro/frontline-education/config/catalog.yaml), not by an individual database request. The repository now fixes `creation_plan.quantity` to `1` for all subscriptions to keep the initial plan simple and avoid confusing “initial databases” counts in the Redis Cloud UI.
 
 ## Local usage
 

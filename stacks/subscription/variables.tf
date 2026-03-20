@@ -81,9 +81,3 @@ variable "max_tier_override" {
   type        = string
   default     = null
 }
-
-variable "planned_database_quantity_override" {
-  description = "Optional override for the planned number of databases in the subscription."
-  type        = number
-  default     = null
-}

@@ -29,7 +29,7 @@ module "subscription" {
   multiple_availability_zones  = try(local.environment_settings.multiple_availability_zones, false)
   preferred_availability_zones = try(local.environment_settings.preferred_availability_zones, [])
   dataset_size_in_gb           = local.size_profile.dataset_size_in_gb
-  planned_database_quantity    = coalesce(var.planned_database_quantity_override, try(local.profile.planned_database_quantity, 1))
+  planned_database_quantity    = 1
   replication                  = try(local.profile.replication, true)
   support_oss_cluster_api      = try(local.profile.support_oss_cluster_api, false)
   throughput_measurement_by    = try(local.size_profile.throughput_measurement_by, try(local.defaults.throughput_measurement_by, "operations-per-second"))
