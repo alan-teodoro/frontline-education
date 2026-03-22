@@ -19,10 +19,14 @@ variable "subscription_family" {
   type        = string
 }
 
-variable "subscription_name_override" {
-  description = "Optional explicit subscription name."
+variable "subscription_name" {
+  description = "Explicit subscription name resolved outside Terraform."
   type        = string
-  default     = null
+
+  validation {
+    condition     = trimspace(var.subscription_name) != ""
+    error_message = "subscription_name must be provided."
+  }
 }
 
 variable "app_name" {
@@ -91,16 +95,54 @@ variable "application_role_arn" {
   }
 }
 
-variable "database_name_override" {
-  description = "Optional explicit database name."
+variable "database_name" {
+  description = "Explicit database name resolved outside Terraform."
   type        = string
-  default     = null
+
+  validation {
+    condition     = trimspace(var.database_name) != ""
+    error_message = "database_name must be provided."
+  }
 }
 
-variable "secret_name_override" {
-  description = "Optional explicit secret name."
+variable "acl_rule_name" {
+  description = "Explicit ACL rule name resolved outside Terraform."
   type        = string
-  default     = null
+
+  validation {
+    condition     = trimspace(var.acl_rule_name) != ""
+    error_message = "acl_rule_name must be provided."
+  }
+}
+
+variable "acl_role_name" {
+  description = "Explicit ACL role name resolved outside Terraform."
+  type        = string
+
+  validation {
+    condition     = trimspace(var.acl_role_name) != ""
+    error_message = "acl_role_name must be provided."
+  }
+}
+
+variable "acl_user_name" {
+  description = "Explicit ACL user name resolved outside Terraform."
+  type        = string
+
+  validation {
+    condition     = trimspace(var.acl_user_name) != ""
+    error_message = "acl_user_name must be provided."
+  }
+}
+
+variable "secret_name" {
+  description = "Explicit secret name resolved outside Terraform."
+  type        = string
+
+  validation {
+    condition     = trimspace(var.secret_name) != ""
+    error_message = "secret_name must be provided."
+  }
 }
 
 variable "acl_user_password_override" {

@@ -1,5 +1,6 @@
 environment         = "dev"
 subscription_family = "student-solutions"
+subscription_name   = "sub-fle-student-solutions"
 
 # Billing defaults come from config/catalog.yaml.
 # Optional overrides:

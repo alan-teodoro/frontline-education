@@ -6,17 +6,10 @@ data "rediscloud_cloud_account" "target" {
   name                     = local.cloud_account_name
 }
 
-module "naming" {
-  source = "../../modules/naming"
-
-  environment         = var.environment
-  subscription_family = var.subscription_family
-}
-
 module "subscription" {
   source = "../../modules/rediscloud_subscription"
 
-  name                         = coalesce(var.subscription_name_override, module.naming.subscription_name)
+  name                         = var.subscription_name
   payment_method               = coalesce(var.payment_method, try(local.billing_settings.payment_method, null))
   payment_method_id            = var.payment_method_id
   payment_card_type            = coalesce(var.payment_card_type, try(local.billing_settings.credit_card_type, null))

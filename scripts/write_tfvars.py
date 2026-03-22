@@ -24,7 +24,7 @@ def main() -> None:
     parser.add_argument("--output", required=True)
     parser.add_argument("--environment", required=True)
     parser.add_argument("--subscription-family", required=True)
-    parser.add_argument("--subscription-name-override")
+    parser.add_argument("--subscription-name")
     parser.add_argument("--deployment-model")
     parser.add_argument("--cloud-account-name-override")
     parser.add_argument("--payment-method")
@@ -35,8 +35,11 @@ def main() -> None:
     parser.add_argument("--persistence-mode")
     parser.add_argument("--data-eviction")
     parser.add_argument("--application-role-arn")
-    parser.add_argument("--database-name-override")
-    parser.add_argument("--secret-name-override")
+    parser.add_argument("--database-name")
+    parser.add_argument("--acl-rule-name")
+    parser.add_argument("--acl-role-name")
+    parser.add_argument("--acl-user-name")
+    parser.add_argument("--secret-name")
     args = parser.parse_args()
 
     if args.stack == "subscription":
@@ -44,7 +47,7 @@ def main() -> None:
             {
                 "environment": args.environment,
                 "subscription_family": args.subscription_family,
-                "subscription_name_override": blank_to_none(args.subscription_name_override),
+                "subscription_name": blank_to_none(args.subscription_name),
                 "deployment_model": blank_to_none(args.deployment_model),
                 "cloud_account_name_override": blank_to_none(args.cloud_account_name_override),
                 "payment_method": blank_to_none(args.payment_method),
@@ -56,15 +59,18 @@ def main() -> None:
             {
                 "environment": args.environment,
                 "subscription_family": args.subscription_family,
-                "subscription_name_override": blank_to_none(args.subscription_name_override),
+                "subscription_name": blank_to_none(args.subscription_name),
                 "app_name": blank_to_none(args.app_name),
                 "purpose": blank_to_none(args.purpose),
                 "tier": blank_to_none(args.tier),
                 "persistence_mode": blank_to_none(args.persistence_mode),
                 "data_eviction": blank_to_none(args.data_eviction),
                 "application_role_arn": blank_to_none(args.application_role_arn),
-                "database_name_override": blank_to_none(args.database_name_override),
-                "secret_name_override": blank_to_none(args.secret_name_override),
+                "database_name": blank_to_none(args.database_name),
+                "acl_rule_name": blank_to_none(args.acl_rule_name),
+                "acl_role_name": blank_to_none(args.acl_role_name),
+                "acl_user_name": blank_to_none(args.acl_user_name),
+                "secret_name": blank_to_none(args.secret_name),
             }
         )
 

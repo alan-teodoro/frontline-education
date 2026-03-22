@@ -19,10 +19,14 @@ variable "subscription_family" {
   type        = string
 }
 
-variable "subscription_name_override" {
-  description = "Optional explicit subscription name."
+variable "subscription_name" {
+  description = "Explicit subscription name resolved outside Terraform."
   type        = string
-  default     = null
+
+  validation {
+    condition     = trimspace(var.subscription_name) != ""
+    error_message = "subscription_name must be provided."
+  }
 }
 
 variable "deployment_model" {

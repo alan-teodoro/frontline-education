@@ -20,22 +20,38 @@ def normalize(value: str) -> str:
     return cleaned.strip("-")
 
 
+def derive_app_and_purpose(app_name: str | None, purpose: str | None, database_name: str | None) -> tuple[str, str]:
+    normalized_app = normalize(app_name) if app_name else ""
+    normalized_purpose = normalize(purpose) if purpose else ""
+
+    if normalized_app and normalized_purpose:
+        return normalized_app, normalized_purpose
+
+    if database_name:
+        normalized_database_name = normalize(database_name)
+        derived_app, separator, derived_purpose = normalized_database_name.rpartition("-")
+        if separator and derived_app and derived_purpose:
+            return derived_app, derived_purpose
+
+    return normalized_app, normalized_purpose
+
+
 def build_names(catalog: dict[str, Any], args: argparse.Namespace) -> dict[str, str]:
     environment = normalize(args.environment)
     subscription_family = normalize(args.subscription_family)
-    app_name = normalize(args.app_name) if args.app_name else ""
-    purpose = normalize(args.purpose) if args.purpose else ""
-    tier = normalize(args.tier) if args.tier else ""
+    app_name, purpose = derive_app_and_purpose(args.app_name, args.purpose, args.database_name)
     secret_prefix = catalog.get("secret_settings", {}).get("prefix", "frontline-education/redis").strip("/")
 
     subscription_name = f"sub-{FRONTLINE_SHORT_CODE}-{subscription_family}"
-    database_name = args.database_name or f"{app_name}-{purpose}"
+    database_name = normalize(args.database_name) if args.database_name else f"{app_name}-{purpose}"
     acl_rule_name = f"acl-{subscription_family}-{app_name}-{purpose}" if app_name and purpose else ""
     acl_role_name = f"role-{subscription_family}-{app_name}-{purpose}" if app_name and purpose else ""
     acl_user_name = f"svc-{subscription_family}-{app_name}-{purpose}" if app_name and purpose else ""
     secret_name = f"{secret_prefix}/{environment}/{subscription_family}/{app_name}/{purpose}" if app_name and purpose else ""
 
     return {
+        "app_name": app_name,
+        "purpose": purpose,
         "subscription_name": subscription_name,
         "database_name": database_name,
         "acl_rule_name": acl_rule_name,
@@ -76,6 +92,11 @@ def main() -> None:
         catalog = yaml.safe_load(handle)
 
     names = build_names(catalog, args)
+    if args.database_name and (not names["app_name"] or not names["purpose"]):
+        parser.error(
+            "database_name must follow the <app>-<purpose> naming convention when app_name and purpose are not provided explicitly."
+        )
+
     environment = normalize(args.environment)
     subscription_family = normalize(args.subscription_family)
 

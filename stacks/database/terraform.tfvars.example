@@ -1,12 +1,15 @@
 environment         = "dev"
 subscription_family = "student-solutions"
+subscription_name   = "sub-fle-student-solutions"
 app_name            = "student-sessions"
 purpose             = "session"
+database_name       = "student-sessions-session"
+acl_rule_name       = "acl-student-solutions-student-sessions-session"
+acl_role_name       = "role-student-solutions-student-sessions-session"
+acl_user_name       = "svc-student-solutions-student-sessions-session"
+secret_name         = "frontline-education/redis/dev/student-solutions/student-sessions/session"
 tier                = "s"
 persistence_mode    = "snapshot-every-6-hours"
 data_eviction       = "allkeys-lru"
 
 application_role_arn = "arn:aws:iam::111122223333:role/frontline-student-sessions-dev"
-
-# Optional:
-# subscription_name_override = "sub-fle-student-solutions"

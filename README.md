@@ -36,7 +36,7 @@ This separation matters for day-2 operations:
 - Destroying one database does not endanger the subscription or sibling databases.
 - Future GitHub Actions workflows can import and update existing resources without collapsing everything into one state file.
 
-The current naming model assumes one Redis Cloud account per environment. Because of that, environment stays in state keys, tags, secret paths, and GitHub approvals, but it is no longer embedded in Redis resource names.
+The current naming model assumes one Redis Cloud account per environment. Because of that, environment stays in state keys, tags, secret paths, and GitHub approvals, but it is no longer embedded in Redis resource names. The GitHub Actions controller resolves names in Python and passes them explicitly into Terraform.
 
 ## Repository layout
 
@@ -47,7 +47,6 @@ The current naming model assumes one Redis Cloud account per environment. Becaus
 - `docs/external-trigger-example.md`: simple example of an external system triggering the GitHub Actions workflow.
 - `docs/github-actions.md`: GitHub Actions setup, secrets, variables, and approval model.
 - `docs/local-testing.md`: local test workflow using the Git-ignored Redis Cloud credential file.
-- `modules/naming`: centralized name generation.
 - `modules/terraform_state_backend`: reusable S3 backend and IAM access module.
 - `modules/rediscloud_subscription`: Redis Cloud Pro subscription module.
 - `modules/rediscloud_database`: Redis Cloud database module.

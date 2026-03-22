@@ -78,6 +78,8 @@ jobs:
   resolve_request:
     runs-on: ubuntu-latest
     outputs:
+      app_name: ${{ steps.resolve.outputs.app_name }}
+      purpose: ${{ steps.resolve.outputs.purpose }}
       subscription_name: ${{ steps.resolve.outputs.subscription_name }}
       database_name: ${{ steps.resolve.outputs.database_name }}
       acl_rule_name: ${{ steps.resolve.outputs.acl_rule_name }}
@@ -193,7 +195,8 @@ jobs:
             --stack subscription \
             --output stacks/subscription/request.auto.tfvars.json \
             --environment "${{ inputs.environment }}" \
-            --subscription-family "${{ inputs.subscription_family }}"
+            --subscription-family "${{ inputs.subscription_family }}" \
+            --subscription-name "${{ needs.resolve_request.outputs.subscription_name }}"
 
       - name: Write temporary subscription backend config
         working-directory: stacks/subscription
@@ -292,12 +295,18 @@ jobs:
             --output stacks/database/request.auto.tfvars.json \
             --environment "${{ inputs.environment }}" \
             --subscription-family "${{ inputs.subscription_family }}" \
-            --app-name "${{ inputs.app_name }}" \
-            --purpose "${{ inputs.purpose }}" \
+            --subscription-name "${{ needs.resolve_request.outputs.subscription_name }}" \
+            --app-name "${{ needs.resolve_request.outputs.app_name }}" \
+            --purpose "${{ needs.resolve_request.outputs.purpose }}" \
             --tier "${{ inputs.tier }}" \
             --persistence-mode "${{ inputs.persistence_mode }}" \
             --data-eviction "${{ inputs.data_eviction }}" \
-            --application-role-arn "${{ inputs.application_role_arn }}"
+            --application-role-arn "${{ inputs.application_role_arn }}" \
+            --database-name "${{ needs.resolve_request.outputs.database_name }}" \
+            --acl-rule-name "${{ needs.resolve_request.outputs.acl_rule_name }}" \
+            --acl-role-name "${{ needs.resolve_request.outputs.acl_role_name }}" \
+            --acl-user-name "${{ needs.resolve_request.outputs.acl_user_name }}" \
+            --secret-name "${{ needs.resolve_request.outputs.secret_name }}"
 
       - name: Write temporary database backend config
         working-directory: stacks/database
@@ -398,19 +407,26 @@ jobs:
             --stack subscription \
             --output stacks/subscription/request.auto.tfvars.json \
             --environment "${{ inputs.environment }}" \
-            --subscription-family "${{ inputs.subscription_family }}"
+            --subscription-family "${{ inputs.subscription_family }}" \
+            --subscription-name "${{ needs.resolve_request.outputs.subscription_name }}"
 
           python3 scripts/write_tfvars.py \
             --stack database \
             --output stacks/database/request.auto.tfvars.json \
             --environment "${{ inputs.environment }}" \
             --subscription-family "${{ inputs.subscription_family }}" \
-            --app-name "${{ inputs.app_name }}" \
-            --purpose "${{ inputs.purpose }}" \
+            --subscription-name "${{ needs.resolve_request.outputs.subscription_name }}" \
+            --app-name "${{ needs.resolve_request.outputs.app_name }}" \
+            --purpose "${{ needs.resolve_request.outputs.purpose }}" \
             --tier "${{ inputs.tier }}" \
             --persistence-mode "${{ inputs.persistence_mode }}" \
             --data-eviction "${{ inputs.data_eviction }}" \
-            --application-role-arn "${{ inputs.application_role_arn }}"
+            --application-role-arn "${{ inputs.application_role_arn }}" \
+            --database-name "${{ needs.resolve_request.outputs.database_name }}" \
+            --acl-rule-name "${{ needs.resolve_request.outputs.acl_rule_name }}" \
+            --acl-role-name "${{ needs.resolve_request.outputs.acl_role_name }}" \
+            --acl-user-name "${{ needs.resolve_request.outputs.acl_user_name }}" \
+            --secret-name "${{ needs.resolve_request.outputs.secret_name }}"
 
       - name: Write temporary backend config
         run: |
