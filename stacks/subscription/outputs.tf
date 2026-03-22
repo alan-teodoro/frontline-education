@@ -1,11 +1,11 @@
 output "subscription_id" {
   description = "Redis Cloud subscription id."
-  value       = module.subscription.id
+  value       = rediscloud_subscription.this.id
 }
 
 output "subscription_name" {
   description = "Redis Cloud subscription name."
-  value       = module.subscription.name
+  value       = rediscloud_subscription.this.name
 }
 
 output "cloud_account_name" {

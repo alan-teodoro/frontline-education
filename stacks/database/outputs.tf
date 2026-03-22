@@ -10,17 +10,17 @@ output "subscription_id" {
 
 output "database_name" {
   description = "Managed database name."
-  value       = module.database.name
+  value       = rediscloud_subscription_database.this.name
 }
 
 output "database_id" {
   description = "Managed database id."
-  value       = module.database.db_id
+  value       = rediscloud_subscription_database.this.db_id
 }
 
 output "private_endpoint" {
   description = "Private endpoint to be used by the application when available."
-  value       = module.database.private_endpoint
+  value       = rediscloud_subscription_database.this.private_endpoint
 }
 
 output "secret_name" {
@@ -37,4 +37,3 @@ output "application_username" {
   description = "Generated ACL username stored in the secret."
   value       = module.access_bundle.acl_user_name
 }
-

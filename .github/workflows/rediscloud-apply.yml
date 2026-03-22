@@ -221,8 +221,8 @@ jobs:
         if: ${{ needs.discovery.outputs.subscription_exists == 'true' }}
         working-directory: stacks/subscription
         run: |
-          if ! terraform state show module.subscription.rediscloud_subscription.this >/dev/null 2>&1; then
-            terraform import module.subscription.rediscloud_subscription.this "${{ needs.discovery.outputs.subscription_id }}"
+          if ! terraform state show rediscloud_subscription.this >/dev/null 2>&1; then
+            terraform import rediscloud_subscription.this "${{ needs.discovery.outputs.subscription_id }}"
           fi
 
       - name: Terraform plan
@@ -331,8 +331,8 @@ jobs:
         if: ${{ needs.discovery.outputs.database_exists == 'true' }}
         working-directory: stacks/database
         run: |
-          if ! terraform state show module.database.rediscloud_subscription_database.this >/dev/null 2>&1; then
-            terraform import module.database.rediscloud_subscription_database.this "${{ needs.discovery.outputs.subscription_id }}/${{ needs.discovery.outputs.database_id }}"
+          if ! terraform state show rediscloud_subscription_database.this >/dev/null 2>&1; then
+            terraform import rediscloud_subscription_database.this "${{ needs.discovery.outputs.subscription_id }}/${{ needs.discovery.outputs.database_id }}"
           fi
 
       - name: Terraform plan
@@ -454,8 +454,8 @@ jobs:
             -backend-config="region=${{ env.TF_STATE_REGION_NAME }}" \
             -backend-config="key=${{ needs.resolve_request.outputs.subscription_state_key }}"
 
-          if [ "${{ needs.discovery.outputs.subscription_exists }}" = "true" ] && ! terraform state show module.subscription.rediscloud_subscription.this >/dev/null 2>&1; then
-            terraform import module.subscription.rediscloud_subscription.this "${{ needs.discovery.outputs.subscription_id }}"
+          if [ "${{ needs.discovery.outputs.subscription_exists }}" = "true" ] && ! terraform state show rediscloud_subscription.this >/dev/null 2>&1; then
+            terraform import rediscloud_subscription.this "${{ needs.discovery.outputs.subscription_id }}"
           fi
 
           terraform apply -input=false -auto-approve
@@ -476,8 +476,8 @@ jobs:
             -backend-config="region=${{ env.TF_STATE_REGION_NAME }}" \
             -backend-config="key=${{ needs.resolve_request.outputs.database_state_key }}"
 
-          if [ "${{ steps.refresh_lookup.outputs.database_exists }}" = "true" ] && ! terraform state show module.database.rediscloud_subscription_database.this >/dev/null 2>&1; then
-            terraform import module.database.rediscloud_subscription_database.this "${{ steps.refresh_lookup.outputs.subscription_id }}/${{ steps.refresh_lookup.outputs.database_id }}"
+          if [ "${{ steps.refresh_lookup.outputs.database_exists }}" = "true" ] && ! terraform state show rediscloud_subscription_database.this >/dev/null 2>&1; then
+            terraform import rediscloud_subscription_database.this "${{ steps.refresh_lookup.outputs.subscription_id }}/${{ steps.refresh_lookup.outputs.database_id }}"
           fi
 
           terraform plan -input=false -out=tfplan

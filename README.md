@@ -48,8 +48,6 @@ The current naming model assumes one Redis Cloud account per environment. Becaus
 - `docs/github-actions.md`: GitHub Actions setup, secrets, variables, and approval model.
 - `docs/local-testing.md`: local test workflow using the Git-ignored Redis Cloud credential file.
 - `modules/terraform_state_backend`: reusable S3 backend and IAM access module.
-- `modules/rediscloud_subscription`: Redis Cloud Pro subscription module.
-- `modules/rediscloud_database`: Redis Cloud database module.
 - `modules/rediscloud_access_bundle`: ACL user/role/rule, Secrets Manager, and IAM access module.
 - `scripts`: helper utilities used by GitHub Actions to resolve names, look up Redis Cloud resources, and generate tfvars files.
 - `stacks/subscription`: root stack for a subscription.

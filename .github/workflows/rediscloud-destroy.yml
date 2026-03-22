@@ -200,11 +200,11 @@ jobs:
             -backend-config="region=${{ env.TF_STATE_REGION_NAME }}" \
             -backend-config="key=${{ needs.resolve_request.outputs.database_state_key }}"
 
-          if [ "${{ needs.discovery.outputs.database_exists }}" = "true" ] && ! terraform state show module.database.rediscloud_subscription_database.this >/dev/null 2>&1; then
-            terraform import module.database.rediscloud_subscription_database.this "${{ needs.discovery.outputs.subscription_id }}/${{ needs.discovery.outputs.database_id }}"
+          if [ "${{ needs.discovery.outputs.database_exists }}" = "true" ] && ! terraform state show rediscloud_subscription_database.this >/dev/null 2>&1; then
+            terraform import rediscloud_subscription_database.this "${{ needs.discovery.outputs.subscription_id }}/${{ needs.discovery.outputs.database_id }}"
           fi
 
-          if terraform state show module.database.rediscloud_subscription_database.this >/dev/null 2>&1; then
+          if terraform state show rediscloud_subscription_database.this >/dev/null 2>&1; then
             terraform destroy -input=false -auto-approve
           else
             echo "No managed database resource found in Terraform state. Skipping database destroy."
@@ -227,8 +227,8 @@ jobs:
             -backend-config="region=${{ env.TF_STATE_REGION_NAME }}" \
             -backend-config="key=${{ needs.resolve_request.outputs.subscription_state_key }}"
 
-          if ! terraform state show module.subscription.rediscloud_subscription.this >/dev/null 2>&1; then
-            terraform import module.subscription.rediscloud_subscription.this "${{ steps.refresh_lookup.outputs.subscription_id }}"
+          if ! terraform state show rediscloud_subscription.this >/dev/null 2>&1; then
+            terraform import rediscloud_subscription.this "${{ steps.refresh_lookup.outputs.subscription_id }}"
           fi
 
           terraform destroy -input=false -auto-approve

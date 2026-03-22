@@ -6,9 +6,7 @@ data "rediscloud_subscription" "target" {
   ]
 }
 
-module "database" {
-  source = "../../modules/rediscloud_database"
-
+resource "rediscloud_subscription_database" "this" {
   subscription_id                       = data.rediscloud_subscription.target.id
   name                                  = var.database_name
   dataset_size_in_gb                    = local.size_profile.dataset_size_in_gb
@@ -23,20 +21,27 @@ module "database" {
   support_oss_cluster_api               = try(local.defaults.support_oss_cluster_api, false)
   external_endpoint_for_oss_cluster_api = try(local.defaults.external_endpoint_for_oss_cluster_api, false)
   auto_minor_version_upgrade            = try(local.defaults.auto_minor_version_upgrade, true)
-  alerts                                = try(local.defaults.database_alerts, [])
   tags                                  = local.redis_tags
   port                                  = var.port
   source_ips                            = var.source_ips
+
+  dynamic "alert" {
+    for_each = try(local.defaults.database_alerts, [])
+    content {
+      name  = alert.value.name
+      value = alert.value.value
+    }
+  }
 }
 
 module "access_bundle" {
   source = "../../modules/rediscloud_access_bundle"
 
   subscription_id                = data.rediscloud_subscription.target.id
-  database_id                    = module.database.db_id
-  database_name                  = module.database.name
-  database_private_endpoint      = module.database.private_endpoint
-  database_public_endpoint       = module.database.public_endpoint
+  database_id                    = rediscloud_subscription_database.this.db_id
+  database_name                  = rediscloud_subscription_database.this.name
+  database_private_endpoint      = rediscloud_subscription_database.this.private_endpoint
+  database_public_endpoint       = rediscloud_subscription_database.this.public_endpoint
   acl_rule_name                  = var.acl_rule_name
   acl_role_name                  = var.acl_role_name
   acl_user_name                  = var.acl_user_name

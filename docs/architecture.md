@@ -153,13 +153,13 @@ Terraform must import existing resources before it can update them.
 ### Subscription import
 
 ```bash
-terraform import module.subscription.rediscloud_subscription.this <subscription_id>
+terraform import rediscloud_subscription.this <subscription_id>
 ```
 
 ### Database import
 
 ```bash
-terraform import module.database.rediscloud_subscription_database.this <subscription_id>/<database_id>
+terraform import rediscloud_subscription_database.this <subscription_id>/<database_id>
 ```
 
 ### ACL and secret resources
