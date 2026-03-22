@@ -14,6 +14,7 @@ The repository now includes both local Terraform stacks and GitHub Actions workf
 - Create a single default ACL bundle for the application bootstrap user with read/write access.
 - Support separate GitHub Actions apply and destroy flows with discovery and import.
 - Support environment-specific Redis Cloud credentials so each environment can target a different Redis Cloud account.
+- Support either a shared Terraform S3 backend or environment-specific backend bucket and region secrets.
 - Support Terraform validation in CI.
 
 ## Why the repository is split into two stacks
@@ -43,6 +44,7 @@ The current naming model assumes one Redis Cloud account per environment. Becaus
 - `docs/naming-convention.md`: naming rules and examples for subscriptions, databases, users, roles, and secrets.
 - `docs/architecture.md`: implementation notes and orchestration guidance.
 - `docs/backend-bootstrap.md`: internal backend bootstrap stack for the S3 remote state bucket and GitHub Actions IAM access.
+- `docs/external-trigger-example.md`: simple example of an external system triggering the GitHub Actions workflow.
 - `docs/github-actions.md`: GitHub Actions setup, secrets, variables, and approval model.
 - `docs/local-testing.md`: local test workflow using the Git-ignored Redis Cloud credential file.
 - `modules/naming`: centralized name generation.
@@ -115,7 +117,7 @@ The default subscription deployment model in the repository is `managed`, which 
 
 ## Backend bootstrap
 
-The S3 backend required by GitHub Actions can be provisioned by the internal stack in [`stacks/state-backend`](/Users/alan/workspaces/alan-teodoro/frontline-education/stacks/state-backend). That stack is documented in [`docs/backend-bootstrap.md`](/Users/alan/workspaces/alan-teodoro/frontline-education/docs/backend-bootstrap.md) and is intended to be run before enabling the customer-facing workflows.
+The S3 backend required by GitHub Actions can be provisioned by the internal stack in [`stacks/state-backend`](/Users/alan/workspaces/alan-teodoro/frontline-education/stacks/state-backend). That stack is documented in [`docs/backend-bootstrap.md`](/Users/alan/workspaces/alan-teodoro/frontline-education/docs/backend-bootstrap.md) and is intended to be run before enabling the customer-facing workflows. The workflows support both a shared backend secret pair and environment-specific backend secret pairs, and the backend stack can either attach access to pre-existing GitHub Actions roles or create the GitHub OIDC provider and repository roles in the customer's AWS account.
 
 ## Remaining future work
 

@@ -50,8 +50,8 @@ if [[ -n "${REDISCLOUD_ACCOUNT_ID:-}" ]]; then
 fi
 echo
 echo "Still needed before workflow execution:"
-echo "- TF_STATE_BUCKET"
-echo "- TF_STATE_REGION"
+echo "- Either shared backend secrets: TF_STATE_BUCKET and TF_STATE_REGION"
+echo "- Or environment-specific backend secrets: TF_STATE_BUCKET_${TARGET_ENVIRONMENT_UPPER} and TF_STATE_REGION_${TARGET_ENVIRONMENT_UPPER}"
 echo "- Repository variables: AWS_GITHUB_ACTIONS_ROLE_ARN_DEV/QA/STAGE/PROD"
 echo
 echo "The workflow resolves credit-card billing from config/catalog.yaml."

@@ -1,12 +1,35 @@
+# Shared-backend example for a single AWS account.
+# For a per-environment backend, rerun this stack with a different bucket name
+# and the role ARNs for the target environment account, then map the result to
+# TF_STATE_BUCKET_<ENV> and TF_STATE_REGION_<ENV> in GitHub.
 aws_region  = "us-east-1"
 bucket_name = "frontline-education-terraform"
 
+# Mode 1: attach backend access to pre-existing GitHub Actions roles.
 github_actions_role_arns = [
   "arn:aws:iam::111122223333:role/GitHubActionsOIDCDev",
   "arn:aws:iam::111122223333:role/GitHubActionsOIDCQa",
   "arn:aws:iam::111122223333:role/GitHubActionsOIDCStage",
   "arn:aws:iam::111122223333:role/GitHubActionsOIDCProd"
 ]
+
+# Mode 2: create the GitHub Actions OIDC roles in this stack instead.
+# Optionally create the standard GitHub OIDC provider too if the account does
+# not have it yet.
+# create_github_oidc_provider = true
+# create_github_actions_roles = true
+# github_actions_role_arns    = []
+# github_repository_owner     = "frontline-education"
+# github_repository_name      = "frontline-education"
+# github_allowed_branches     = ["main"]
+#
+# Optional if you want custom role names:
+# github_actions_role_names_by_environment = {
+#   dev   = "GitHubActionsOIDCDev"
+#   qa    = "GitHubActionsOIDCQa"
+#   stage = "GitHubActionsOIDCStage"
+#   prod  = "GitHubActionsOIDCProd"
+# }
 
 # Optional:
 # kms_key_arn = "arn:aws:kms:us-east-1:111122223333:key/12345678-1234-1234-1234-123456789012"

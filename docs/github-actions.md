@@ -18,8 +18,19 @@ This repository now includes:
 - `REDISCLOUD_SECRET_KEY_STAGE`
 - `REDISCLOUD_ACCESS_KEY_PROD`
 - `REDISCLOUD_SECRET_KEY_PROD`
-- `TF_STATE_BUCKET`: S3 bucket used as the Terraform remote backend.
-- `TF_STATE_REGION`: AWS region for the Terraform state bucket.
+- `TF_STATE_BUCKET`: default S3 bucket used as the Terraform remote backend when an environment-specific backend secret is not set.
+- `TF_STATE_REGION`: default AWS region for the Terraform state bucket when an environment-specific backend secret is not set.
+
+Optional environment-specific backend secrets:
+
+- `TF_STATE_BUCKET_DEV`
+- `TF_STATE_BUCKET_QA`
+- `TF_STATE_BUCKET_STAGE`
+- `TF_STATE_BUCKET_PROD`
+- `TF_STATE_REGION_DEV`
+- `TF_STATE_REGION_QA`
+- `TF_STATE_REGION_STAGE`
+- `TF_STATE_REGION_PROD`
 
 Mapping reminder:
 
@@ -34,6 +45,21 @@ Mapping reminder:
 - `AWS_GITHUB_ACTIONS_ROLE_ARN_PROD`
 
 These role ARNs are used by `aws-actions/configure-aws-credentials` with GitHub OIDC.
+
+If the backend bootstrap stack creates the roles for you, copy the `managed_github_actions_role_arns` outputs into those repository variables.
+
+Backend resolution order:
+
+- For `dev`, the workflow prefers `TF_STATE_BUCKET_DEV` and `TF_STATE_REGION_DEV`.
+- For `qa`, the workflow prefers `TF_STATE_BUCKET_QA` and `TF_STATE_REGION_QA`.
+- For `stage`, the workflow prefers `TF_STATE_BUCKET_STAGE` and `TF_STATE_REGION_STAGE`.
+- For `prod`, the workflow prefers `TF_STATE_BUCKET_PROD` and `TF_STATE_REGION_PROD`.
+- If the environment-specific backend secret is empty or absent, the workflow falls back to `TF_STATE_BUCKET` and `TF_STATE_REGION`.
+
+That means the repository supports both operating models:
+
+- one shared backend bucket for all environments
+- one backend bucket per environment
 
 Billing is resolved from [`config/catalog.yaml`](/Users/alan/workspaces/alan-teodoro/frontline-education/config/catalog.yaml). For the current test setup, the workflow uses `payment_method=credit-card` and looks up the configured card automatically by `credit_card_type` and `credit_card_last_four`.
 
@@ -70,7 +96,7 @@ The workflows use:
 
 That means approvals are enforced by GitHub, not by custom shell logic.
 
-Redis Cloud credentials are selected from the workflow input environment, so discovery, plan, apply, and destroy all run against the Redis Cloud account mapped to `dev`, `qa`, `stage`, or `prod`.
+Redis Cloud credentials and backend settings are selected from the workflow input environment, so discovery, plan, apply, and destroy all run against the Redis Cloud account and Terraform backend mapped to `dev`, `qa`, `stage`, or `prod`.
 
 ## Backend layout
 

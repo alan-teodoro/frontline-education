@@ -11,14 +11,35 @@ terraform {
 }
 
 locals {
-  role_names = toset([
+  existing_role_names = toset([
     for arn in var.github_actions_role_arns : element(reverse(split("/", arn)), 0)
   ])
+
+  managed_role_definitions = var.create_github_actions_roles ? var.github_actions_role_names_by_environment : {}
+
+  role_names = setunion(
+    local.existing_role_names,
+    toset(values(local.managed_role_definitions))
+  )
 
   object_resource_arns = [
     for prefix in var.allowed_state_prefixes : "arn:aws:s3:::${var.bucket_name}/${prefix}"
   ]
+
+  github_oidc_provider_arn = coalesce(
+    try(aws_iam_openid_connect_provider.github[0].arn, null),
+    var.github_oidc_provider_arn,
+    "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com"
+  )
+
+  branch_subjects = var.create_github_actions_roles ? [
+    for branch in var.github_allowed_branches : "repo:${var.github_repository_owner}/${var.github_repository_name}:ref:refs/heads/${branch}"
+  ] : []
 }
+
+data "aws_caller_identity" "current" {}
+
+data "aws_partition" "current" {}
 
 data "external" "bucket_check" {
   program = ["python3", "${path.module}/../../scripts/check_s3_bucket.py"]
@@ -110,6 +131,70 @@ resource "aws_s3_bucket_policy" "this" {
   policy = data.aws_iam_policy_document.bucket_policy.json
 
   depends_on = [aws_s3_bucket.this]
+}
+
+resource "aws_iam_openid_connect_provider" "github" {
+  count = var.create_github_oidc_provider ? 1 : 0
+
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = []
+
+  tags = merge(
+    var.tags,
+    {
+      component = "github-oidc-provider"
+    }
+  )
+}
+
+data "aws_iam_policy_document" "github_oidc_trust" {
+  for_each = local.managed_role_definitions
+
+  statement {
+    sid    = "GitHubActionsOIDC"
+    effect = "Allow"
+
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [local.github_oidc_provider_arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "token.actions.githubusercontent.com:sub"
+      values = concat(
+        local.branch_subjects,
+        [
+          "repo:${var.github_repository_owner}/${var.github_repository_name}:environment:${each.key}",
+          "repo:${var.github_repository_owner}/${var.github_repository_name}:environment:destroy-${each.key}"
+        ]
+      )
+    }
+  }
+}
+
+resource "aws_iam_role" "github_actions" {
+  for_each = local.managed_role_definitions
+
+  name               = each.value
+  assume_role_policy = data.aws_iam_policy_document.github_oidc_trust[each.key].json
+
+  tags = merge(
+    var.tags,
+    {
+      component   = "github-actions-oidc-role"
+      environment = each.key
+    }
+  )
 }
 
 data "aws_iam_policy_document" "backend_access" {

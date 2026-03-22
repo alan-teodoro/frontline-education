@@ -74,4 +74,11 @@ This script sets:
 
 It does not create the AWS backend secrets or repository variables, because those are specific to Frontline's AWS environments and GitHub repository settings.
 
+For the backend, the workflows now support either:
+
+- shared repository secrets: `TF_STATE_BUCKET` and `TF_STATE_REGION`
+- environment-specific repository secrets such as `TF_STATE_BUCKET_DEV` and `TF_STATE_REGION_DEV`
+
+If you only have one AWS account, you can keep using the shared backend secrets or point every environment-specific secret to the same bucket and region.
+
 For the current personal test setup, the Redis Cloud account id is `1977930`. The customer design can still use different Redis Cloud accounts per environment by populating the `QA`, `STAGE`, and `PROD` credential pairs separately.

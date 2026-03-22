@@ -168,6 +168,8 @@ jobs:
       - discovery
     env:
       AWS_ROLE_TO_ASSUME: ${{ inputs.environment == 'dev' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_DEV || inputs.environment == 'qa' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_QA || inputs.environment == 'stage' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_STAGE || vars.AWS_GITHUB_ACTIONS_ROLE_ARN_PROD }}
+      TF_STATE_BUCKET_NAME: ${{ inputs.environment == 'dev' && secrets.TF_STATE_BUCKET_DEV || inputs.environment == 'qa' && secrets.TF_STATE_BUCKET_QA || inputs.environment == 'stage' && secrets.TF_STATE_BUCKET_STAGE || inputs.environment == 'prod' && secrets.TF_STATE_BUCKET_PROD || secrets.TF_STATE_BUCKET }}
+      TF_STATE_REGION_NAME: ${{ inputs.environment == 'dev' && secrets.TF_STATE_REGION_DEV || inputs.environment == 'qa' && secrets.TF_STATE_REGION_QA || inputs.environment == 'stage' && secrets.TF_STATE_REGION_STAGE || inputs.environment == 'prod' && secrets.TF_STATE_REGION_PROD || secrets.TF_STATE_REGION }}
       TF_IN_AUTOMATION: "true"
       REDISCLOUD_ACCESS_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_ACCESS_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_ACCESS_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_ACCESS_KEY_STAGE || secrets.REDISCLOUD_ACCESS_KEY_PROD }}
       REDISCLOUD_SECRET_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_SECRET_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_SECRET_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_SECRET_KEY_STAGE || secrets.REDISCLOUD_SECRET_KEY_PROD }}
@@ -180,7 +182,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ secrets.TF_STATE_REGION }}
+          aws-region: ${{ env.TF_STATE_REGION_NAME }}
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
@@ -208,8 +210,8 @@ jobs:
         working-directory: stacks/subscription
         run: |
           terraform init -reconfigure \
-            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
-            -backend-config="region=${{ secrets.TF_STATE_REGION }}" \
+            -backend-config="bucket=${{ env.TF_STATE_BUCKET_NAME }}" \
+            -backend-config="region=${{ env.TF_STATE_REGION_NAME }}" \
             -backend-config="key=${{ needs.resolve_request.outputs.subscription_state_key }}"
 
       - name: Import existing subscription when needed
@@ -264,6 +266,8 @@ jobs:
       - discovery
     env:
       AWS_ROLE_TO_ASSUME: ${{ inputs.environment == 'dev' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_DEV || inputs.environment == 'qa' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_QA || inputs.environment == 'stage' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_STAGE || vars.AWS_GITHUB_ACTIONS_ROLE_ARN_PROD }}
+      TF_STATE_BUCKET_NAME: ${{ inputs.environment == 'dev' && secrets.TF_STATE_BUCKET_DEV || inputs.environment == 'qa' && secrets.TF_STATE_BUCKET_QA || inputs.environment == 'stage' && secrets.TF_STATE_BUCKET_STAGE || inputs.environment == 'prod' && secrets.TF_STATE_BUCKET_PROD || secrets.TF_STATE_BUCKET }}
+      TF_STATE_REGION_NAME: ${{ inputs.environment == 'dev' && secrets.TF_STATE_REGION_DEV || inputs.environment == 'qa' && secrets.TF_STATE_REGION_QA || inputs.environment == 'stage' && secrets.TF_STATE_REGION_STAGE || inputs.environment == 'prod' && secrets.TF_STATE_REGION_PROD || secrets.TF_STATE_REGION }}
       TF_IN_AUTOMATION: "true"
       REDISCLOUD_ACCESS_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_ACCESS_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_ACCESS_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_ACCESS_KEY_STAGE || secrets.REDISCLOUD_ACCESS_KEY_PROD }}
       REDISCLOUD_SECRET_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_SECRET_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_SECRET_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_SECRET_KEY_STAGE || secrets.REDISCLOUD_SECRET_KEY_PROD }}
@@ -276,7 +280,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ secrets.TF_STATE_REGION }}
+          aws-region: ${{ env.TF_STATE_REGION_NAME }}
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
@@ -310,8 +314,8 @@ jobs:
         working-directory: stacks/database
         run: |
           terraform init -reconfigure \
-            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
-            -backend-config="region=${{ secrets.TF_STATE_REGION }}" \
+            -backend-config="bucket=${{ env.TF_STATE_BUCKET_NAME }}" \
+            -backend-config="region=${{ env.TF_STATE_REGION_NAME }}" \
             -backend-config="key=${{ needs.resolve_request.outputs.database_state_key }}"
 
       - name: Import existing database when needed
@@ -369,6 +373,8 @@ jobs:
     environment: ${{ needs.resolve_request.outputs.github_environment }}
     env:
       AWS_ROLE_TO_ASSUME: ${{ inputs.environment == 'dev' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_DEV || inputs.environment == 'qa' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_QA || inputs.environment == 'stage' && vars.AWS_GITHUB_ACTIONS_ROLE_ARN_STAGE || vars.AWS_GITHUB_ACTIONS_ROLE_ARN_PROD }}
+      TF_STATE_BUCKET_NAME: ${{ inputs.environment == 'dev' && secrets.TF_STATE_BUCKET_DEV || inputs.environment == 'qa' && secrets.TF_STATE_BUCKET_QA || inputs.environment == 'stage' && secrets.TF_STATE_BUCKET_STAGE || inputs.environment == 'prod' && secrets.TF_STATE_BUCKET_PROD || secrets.TF_STATE_BUCKET }}
+      TF_STATE_REGION_NAME: ${{ inputs.environment == 'dev' && secrets.TF_STATE_REGION_DEV || inputs.environment == 'qa' && secrets.TF_STATE_REGION_QA || inputs.environment == 'stage' && secrets.TF_STATE_REGION_STAGE || inputs.environment == 'prod' && secrets.TF_STATE_REGION_PROD || secrets.TF_STATE_REGION }}
       TF_IN_AUTOMATION: "true"
       REDISCLOUD_ACCESS_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_ACCESS_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_ACCESS_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_ACCESS_KEY_STAGE || secrets.REDISCLOUD_ACCESS_KEY_PROD }}
       REDISCLOUD_SECRET_KEY: ${{ inputs.environment == 'dev' && secrets.REDISCLOUD_SECRET_KEY_DEV || inputs.environment == 'qa' && secrets.REDISCLOUD_SECRET_KEY_QA || inputs.environment == 'stage' && secrets.REDISCLOUD_SECRET_KEY_STAGE || secrets.REDISCLOUD_SECRET_KEY_PROD }}
@@ -381,7 +387,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ secrets.TF_STATE_REGION }}
+          aws-region: ${{ env.TF_STATE_REGION_NAME }}
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
@@ -428,8 +434,8 @@ jobs:
         working-directory: stacks/subscription
         run: |
           terraform init -reconfigure \
-            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
-            -backend-config="region=${{ secrets.TF_STATE_REGION }}" \
+            -backend-config="bucket=${{ env.TF_STATE_BUCKET_NAME }}" \
+            -backend-config="region=${{ env.TF_STATE_REGION_NAME }}" \
             -backend-config="key=${{ needs.resolve_request.outputs.subscription_state_key }}"
 
           if [ "${{ needs.discovery.outputs.subscription_exists }}" = "true" ] && ! terraform state show module.subscription.rediscloud_subscription.this >/dev/null 2>&1; then
@@ -450,8 +456,8 @@ jobs:
         working-directory: stacks/database
         run: |
           terraform init -reconfigure \
-            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
-            -backend-config="region=${{ secrets.TF_STATE_REGION }}" \
+            -backend-config="bucket=${{ env.TF_STATE_BUCKET_NAME }}" \
+            -backend-config="region=${{ env.TF_STATE_REGION_NAME }}" \
             -backend-config="key=${{ needs.resolve_request.outputs.database_state_key }}"
 
           if [ "${{ steps.refresh_lookup.outputs.database_exists }}" = "true" ] && ! terraform state show module.database.rediscloud_subscription_database.this >/dev/null 2>&1; then
