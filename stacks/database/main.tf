@@ -26,7 +26,7 @@ resource "rediscloud_subscription_database" "this" {
   source_ips                            = var.source_ips
 
   dynamic "alert" {
-    for_each = try(local.defaults.database_alerts, [])
+    for_each = local.database_alerts
     content {
       name  = alert.value.name
       value = alert.value.value

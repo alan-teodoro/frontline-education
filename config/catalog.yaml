@@ -17,13 +17,18 @@ defaults:
       duration_in_hours: 4
       days:
         - Sunday
-  database_alerts:
-    - name: dataset-size
-      value: 80
-    - name: latency
-      value: 10
-    - name: throughput-higher-than
-      value: 1000
+  database_alert_settings:
+    dataset_size_pct: 80
+    throughput_high_ratio_warning: 0.7
+    throughput_high_ratio_critical: 0.9
+    latency_ms_warning: 10
+    latency_ms_critical: 20
+    # Replica Of thresholds are stored here for future use. The current
+    # repository baseline provisions standalone Redis Cloud databases with HA,
+    # not Replica Of target databases.
+    replica_unable_to_sync_timeout_sec: 1
+    replica_lag_sec_warning: 60
+    replica_lag_sec_critical: 120
 
 secret_settings:
   prefix: frontline-education/redis
@@ -75,18 +80,21 @@ environments:
 
 subscription_profiles:
   shared:
+    description: Shared platform slice that may host multiple workloads and should keep the largest default envelope.
     max_tier: xl
     memory_storage: ram
     replication: true
     support_oss_cluster_api: false
     modules: []
   student-solutions:
+    description: Student-facing workloads that benefit from a larger shared subscription envelope, but not the largest one by default.
     max_tier: l
     memory_storage: ram
     replication: true
     support_oss_cluster_api: false
     modules: []
   business-systems:
+    description: Back-office and business workloads with similar baseline envelope needs to student solutions.
     max_tier: l
     memory_storage: ram
     replication: true
@@ -95,22 +103,26 @@ subscription_profiles:
 
 database_sizes:
   s:
+    description: Small cache, small session store, or internal service with modest concurrency.
     dataset_size_in_gb: 1
-    throughput_measurement_by: operations-per-second
-    throughput_measurement_value: 1000
-    replication: true
-  m:
-    dataset_size_in_gb: 5
     throughput_measurement_by: operations-per-second
     throughput_measurement_value: 5000
     replication: true
-  l:
-    dataset_size_in_gb: 10
+  m:
+    description: Medium application cache or session workload with steady traffic.
+    dataset_size_in_gb: 5
     throughput_measurement_by: operations-per-second
-    throughput_measurement_value: 10000
+    throughput_measurement_value: 15000
+    replication: true
+  l:
+    description: Critical workload with higher concurrency, burst tolerance, or heavier persistence overhead.
+    dataset_size_in_gb: 15
+    throughput_measurement_by: operations-per-second
+    throughput_measurement_value: 40000
     replication: true
   xl:
-    dataset_size_in_gb: 25
+    description: Large shared workload or high-demand service that needs substantial headroom.
+    dataset_size_in_gb: 30
     throughput_measurement_by: operations-per-second
-    throughput_measurement_value: 20000
+    throughput_measurement_value: 80000
     replication: true

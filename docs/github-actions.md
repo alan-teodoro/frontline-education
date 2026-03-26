@@ -124,6 +124,27 @@ Examples:
 8. Apply the database stack.
 9. Publish the secret name and ARN in the workflow summary.
 
+### Tier sizing impact
+
+The GitHub Actions interface does not need to change when the Redis Cloud t-shirt catalog is recalibrated, as long as the tier keys remain the same.
+
+For this repository, `s`, `m`, `l`, and `xl` are still the only workflow inputs. The effective Redis Cloud `dataset_size_in_gb` and `throughput_measurement_value` come from [`config/catalog.yaml`](/Users/alan/workspaces/alan-teodoro/frontline-education/config/catalog.yaml), so changing those catalog values changes what GitHub Actions provisions without changing the workflow contract.
+
+Important side effect:
+
+- database requests use the selected `tier` directly
+- subscription creation uses `subscription_profiles.<family>.max_tier`, which also resolves through `database_sizes`
+
+That means raising a tier definition can also raise the initial subscription `creation_plan` for any subscription family whose `max_tier` points at that tier.
+
+Database alerts are also derived from [`config/catalog.yaml`](/Users/alan/workspaces/alan-teodoro/frontline-education/config/catalog.yaml). The current repository baseline calculates:
+
+- `dataset-size` directly from the configured percentage
+- `throughput-higher-than` from the selected tier throughput multiplied by the configured critical ratio
+- `latency` from the configured critical latency threshold
+
+The catalog also stores warning thresholds and Replica Of thresholds for future evolution, but the current Terraform flow applies one Redis Cloud threshold per supported alert type and does not provision Replica Of databases today.
+
 ### Destroy workflow
 
 1. Accept a minimal request with `environment`, `subscription_family`, and the exact `database_name`.
